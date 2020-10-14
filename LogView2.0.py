@@ -1,240 +1,371 @@
 from datetime import datetime
 import os
+import colorama
 import sys
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
 
-Location = "C:\MyLog\\"
-Passowrd_Location = Location+"Password.txt"
-#PASSWORD CHECK TO ACCESS THE REST OF THE APPLICATION
-if not os.path.exists(Location):
-    os.makedirs(Location)
+#This sections is responsible for storing the main path to the log files and creating a file to store your password.
 
-password_creation = False
-while password_creation == False:
-    if not os.path.exists(Passowrd_Location):
-        password = input("Please enter the password that you want to use for log entry:   ")
-        yes1_or_no1 = input("\nAre you sure you want your password to be "+password+"?\nType 'y' for YES\nType 'n' for NO\t")
-        if((yes1_or_no1 == 'y') or (yes1_or_no1 == 'Y')):
-            password_file = open(Passowrd_Location,encoding="utf8",mode='a+')
-            password_file.write(password)
-            password_creation = True
-            password_file.close()
+#generalPath holds the path to the directory which will hold all of the log files and the password file
+
+#passwordLocation is a file within the generalPath directory that holds your entry password
+
+#passwordCreationState holds a boolean value for whether or not the password file has been created
+
+#passwordInput is the user input when CREATING a NEW password
+
+#passwordCheck is the user input to double check that the password they chose to create is their truly desired one
+
+#passwordFile is the file that holds the password
+
+#passwordState holds a boolean value for whether or not the user typed in the correct password on entry
+
+#inputPassword is the user input when typing the EXISTING/RECORDED password on entry
+
+#password = the actual password that is stored in passwordFile
+generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
+passwordLocation = generalPath+"Password.txt"
+
+if not os.path.exists(generalPath):
+    os.makedirs(generalPath)
+
+passwordCreationState = False
+while passwordCreationState == False:
+    if not os.path.exists(passwordLocation):
+        passwordInput = input("Please enter the password that you want to use for log entry:   ")
+        passwordCheck = input("\nAre you sure you want your password to be "+passwordInput+"?\nType 'y' for YES\nType 'n' for NO\t")
+        if((passwordCheck == 'y') or (passwordCheck == 'Y')):
+            passwordFile = open(passwordLocation,encoding="utf8",mode='a+')
+            passwordFile.write(passwordInput)
+            passwordCreationState = True
+            passwordFile.close()
         else:
-            password_creation = False
+            passwordCreationState = False
     else:
-        password_creation=True
-if os.path.exists(Passowrd_Location):    
-    password_state = False
-    while password_state != True:
-        password = input("\nEnter Password: ")
-        passcode_open = open(Passowrd_Location,encoding="utf8",mode='r')
-        passcode = passcode_open.read()
-        if password == passcode:
-            password_state == True
-            break
+        passwordCreationState=True
 
-    #TOP MENU AND VARIABLE SETUP
-    edit_or_read = input("\n1: Edit Today\n2: View Past\n3: Today's History\n[ENTER]: Exit\n")
-    while(edit_or_read != ""):
-        #general_path = r"C:\Users\ecoce\Important Folders\Documents\My_Log\\"
+if os.path.exists(passwordLocation):    
+    passwordState = False
+    while passwordState != True:
+        inputPassword = input("\nEnter Password: ")
+        passwordFile = open(passwordLocation,encoding="utf8",mode='r')
+        password = passwordFile.read()
+        if inputPassword == password:
+            passwordState == True
+            break
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+
+#This section sets up the main menu prompt
+
+#modeSelect is the user input for the desired mode shown in the main menu
+
+#date holds the date object as "2020-10-11 12:45:21.784683"
+
+#year holds the year value from the date object as "2020"
+
+#day holds the day value from the date object as "11"
+
+#month holds the month value from the date object as "October"
+
+#today holds the file name of the current month-year log as "C:\Users\ecoce\OneDrive\MyLog\\October2020.txt"
+
+#todayLoggedState holds a boolean value for if the user has already logged the current day's date
+
+    modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+    while(modeSelect != ""):
         date = datetime.now()
         year = date.strftime('%Y')
         day = date.strftime('%d')
         month = date.strftime('%B')
-        today = Location+month+year+".txt"
-        today_logged_state = False
+        today = generalPath+month+year+".txt"
+        todayLoggedState = False
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
 
-        #EDIT TODAY SECTION
-        if edit_or_read == '1':
-            file_list = []
-            today_valid = False
-            for today_file in os.listdir(Location):
-                if today_file.endswith(".txt"):
-                    file_list.append(today_file)
-            for item in file_list:
-                if((month in item)and(year in item)):
-                    today_valid = True
-            if(today_valid==True):
-                desired_file = open(today,encoding="utf8",mode='r+')
-                #desired_file= desired_file.readlines()
-                file_content = []
-                for line_1 in desired_file:
-                    file_content.append(line_1)
-                desired_file.close()
-                for line_2 in range(len(file_content)):
-                    if ((str(day)+',' in file_content[line_2])and(month in file_content[line_2])and(year in file_content[line_2])):
-                        today_logged_state = True
-                if today_logged_state == False:
-                    daily_entry = input("Enter your log entry for " + month + "/" + day + "/"+ year + "\n")
-                    edit_today = open(today,'a+')
-                    edit_today.write("\n"+ month + " " + day + ", " + year + "\n")
-                    edit_today.write(daily_entry)    
-                    edit_today.close()
+#Mode 1 allows the user to log the current day's log entry
+
+#txtList holds all of the .txt files in the generalPath directory
+
+#todayFileState holds a boolean for if there is already a created text file for the current month-year
+
+#todayFile is the file that holds the current month-year log
+
+#todayFileContent holds the content within todayFile
+
+#entryInput holds the user input for what they want logged on the current day
+
+#entryInputAppend opens the current month-year file and appends entryInput along with the datestamp
+
+        if modeSelect == '1':                                                                                                   
+            txtList = []
+            todayFileState = False
+
+            for i in os.listdir(generalPath):
+                if i.endswith(".txt"):
+                    txtList.append(i)
+
+            for j in txtList:
+                if((month in j)and(year in j)):
+                    todayFileState = True
+            if(todayFileState==True):
+                todayFile = open(today,encoding="utf8",mode='r+')
+                todayFileContent = []
+                for k in todayFile:
+                    todayFileContent.append(k)
+                todayFile.close()
+                for l in range(len(todayFileContent)):
+                    if ((str(day)+',' in todayFileContent[l])and(month in todayFileContent[l])and(year in todayFileContent[l])):
+                        todayLoggedState = True
+                if todayLoggedState == False:
+                    entryInput = input("Enter your log entry for " + month + "/" + day + "/"+ year + "\n")
+                    entryInputAppend = open(today,'a+')
+                    entryInputAppend.write("\n"+ month + " " + day + ", " + year + "\n")
+                    entryInputAppend.write(entryInput)    
+                    entryInputAppend.close()
                 else:
                     print("\nYou have already logged an entry for " + month + "/" + day + "/"+ year + "\n")
-                edit_or_read = input("\n1: Edit Today\n2: View Past\n3: Today's History\n[ENTER]: Exit\n")
+                modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
             else:
-                daily_entry = input("Enter your log entry for " + month + "/" + day + "/"+ year + "\n")
-                edit_today = open(today,'a+')
-                edit_today.write("\n"+ month + " " + day + ", " + year + "\n")
-                edit_today.write(daily_entry)    
-                edit_today.close()
-                edit_or_read = input("\n1: Edit Today\n2: View Past\n3: Today's History\n[ENTER]: Exit\n")
+                entryInput = input("Enter your log entry for " + month + "/" + day + "/"+ year + "\n")
+                entryInputAppend = open(today,'a+')
+                entryInputAppend.write("\n"+ month + " " + day + ", " + year + "\n")
+                entryInputAppend.write(entryInput)    
+                entryInputAppend.close()
+                modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
 
+#Mode 2 allows the user to search for a specific date (that has been obviously logged) and will display the corresponding entry
 
-        #VIEW PAST SECTION
-        elif edit_or_read == '2':
-            valid_day = False
-            valid_month = False 
-            valid_year = False
-            keep_going_state = True
-            keep_going = ""
-            desired_year = ""
-            desired_month = ""
-            desired_day = ""
+#txtList holds all of the .txt files in the generalPath directory
 
-            fileList = []
-            for filename in os.listdir(Location):
-                if filename.endswith(".txt"):
-                    fileList.append(filename)
+#validYear is a boolean that will be true if the user inputs a number AND if there is a file with that year in the generalPath
 
-            while keep_going_state == True:
+#invalidYear is another boolean that will essentially do the same thing as validYear however makes the nested loops less complicated 
+
+#validMonth is a boolean that will be true if the user inputs a number AND if there is a file with that month in the generalPath
+
+#invalidMonth is a boolean that will essentially do the same thing as validMonth however makes the nested loops less complicated 
+
+#validDay is a boolean that will be true if the user inputs a number that makes sense according the month
+
+#keepGoing holds the user input for whether the user wants to keep searching past dates or exit back to the menu
+
+#desiredYearInput holds the user input for the desired year 
+
+#desiredMonthInput holds the user input for the desired month
+
+#desiredDayInput holds teh user input for the desired day
+
+#isdigit is a boolean that will check to see if the user input for the day is a number
+
+#pastFile holds a string that has the path and filename based off the user input for the desired month-year
+
+#pastFileRead opens and reads pastFile into the buffer
+
+#desiredLine holds the line number in pastFileRead where the desired day, month, and year is found
+
+#pastFileContent stores what is read from pastFileRead
+
+#foundState is a boolean that determines whether there is a log entry with the desired day
+
+        elif modeSelect == '2':
+            validDay = False
+            validMonth = False 
+            validYear = False
+            keepGoingState = True
+            keepGoing = ""
+            desiredYearInput = ""
+            desiredMonthInput = ""
+            desiredDayInput = ""
+
+            txtList = []
+            for i in os.listdir(generalPath):
+                if i.endswith(".txt"):
+                    txtList.append(i)
+
+            while keepGoingState == True:
                 #YEAR CHECK
-                invalid_year = False
-                while valid_year == False:
-                    desired_year = input("\nEnter the desired year ('2017' for example):\n")
-                    for filename_1 in fileList:
-                        if ((desired_year.isdigit())and(desired_year in filename_1)):
-                            valid_year = True
-                            invalid_year = False
+                invalidYear = False
+                while validYear == False:
+                    desiredYearInput = input("\nEnter the desired year ('2017' for example):\n")
+                    for j in txtList:
+                        if ((desiredYearInput.isdigit())and(desiredYearInput in j)):
+                            validYear = True
+                            invalidYear = False
                             break
                         else:
-                            invalid_year = True
-                    if(invalid_year == True):
-                        print("\nYou do not have any logs for the year "+desired_year+"\n")       
+                            invalidYear = True
+                    if(invalidYear == True):
+                        print("\nYou do not have any logs for the year "+desiredYearInput+"\n")       
                 #MONTH CHECK
-                invalid_month = False
-                while valid_month == False:
-                    desired_month = input("\nEnter the desired month ('January' for example):\n")
-                    for filename_2 in fileList:
-                        if desired_month in filename_2:
-                            valid_month = True
-                            invalid_month = False
+                invalidMonth = False
+                while validMonth == False:
+                    desiredMonthInput = input("\nEnter the desired month ('January' for example):\n")
+                    for k in txtList:
+                        if desiredMonthInput in k:
+                            validMonth = True
+                            invalidMonth = False
                             break
                         else:
-                            invalid_month = True
-                    if(invalid_month == True):
-                        print("\nYou do not have any logs for the month "+desired_month+"\n")                        
+                            invalidMonth = True
+                    if(invalidMonth == True):
+                        print("\nYou do not have any logs for the month "+desiredMonthInput+"\n")                        
                 #DAY CHECK
-                while valid_day == False:
+                while validDay == False:
                     isdigit = False
                     while isdigit == False:
-                        desired_day_str = input("\nEnter the desired day ('05' for example):\n")
-                        if desired_day_str.isdigit():
-                            desired_day = int(desired_day_str)
+                        desiredDayInput = input("\nEnter the desired day ('05' for example):\n")
+                        if desiredDayInput.isdigit():
+                            desiredDayInput = int(desiredDayInput)
                             isdigit = True
                             break
-                    #desired_day = int(input("Enter the desired day ('05' for example):\n"))
 
-                    if(desired_month == "January")or(desired_month =="March")or(desired_month =="May")or(desired_month =="July")or(desired_month =="August")or(desired_month =="October")or(desired_month =="December"):
-                        if (desired_day > 0) and (desired_day <= 31):
-                            valid_day = True
+                    if(desiredMonthInput == "January")or(desiredMonthInput =="March")or(desiredMonthInput =="May")or(desiredMonthInput =="July")or(desiredMonthInput =="August")or(desiredMonthInput =="October")or(desiredMonthInput =="December"):
+                        if (desiredDayInput > 0) and (desiredDayInput <= 31):
+                            validDay = True
                             break
                         else:
-                            print("\nYou have entered an invalid day for the month of "+ desired_month+"\n")
-                            valid_day = False
+                            print("\nYou have entered an invalid day for the month of "+ desiredMonthInput+"\n")
+                            validDay = False
 
-                    if desired_month == "April"or"June"or"September"or"November":
-                        if (desired_day > 0) and (desired_day <= 30):
-                            valid_day = True
+                    if desiredMonthInput == "April"or"June"or"September"or"November":
+                        if (desiredDayInput > 0) and (desiredDayInput <= 30):
+                            validDay = True
                             break
                         else:
-                            print("\nYou have entered an invalid day for the month of "+ desired_month+"\n")
-                            valid_day = False
+                            print("\nYou have entered an invalid day for the month of "+ desiredMonthInput+"\n")
+                            validDay = False
 
-                    if desired_month == "February":
-                        if (desired_day > 0) and (desired_day <= 28):
-                            valid_day = True
+                    if desiredMonthInput == "February":
+                        if (desiredDayInput > 0) and (desiredDayInput <= 28):
+                            validDay = True
                             break
                         else:
-                            print("\nYou have entered an invalid day for the month of "+ desired_month+"\n")
-                            valid_day = False
+                            print("\nYou have entered an invalid day for the month of "+ desiredMonthInput+"\n")
+                            validDay = False
 
                 #PRINTING THE DAY
-                past_file = Location + desired_month + desired_year + ".txt"
-                desired_file = open(past_file,encoding="utf8")
-                desired_line = 0
-                file_content = []
-                ready_for_print = False
-                for line_1 in desired_file:
-                    file_content.append(line_1)
-                for line_2 in range(len(file_content)):
-                    if ((str(desired_day)+',' in file_content[line_2])and(desired_month.title() in file_content[line_2])and(desired_year in file_content[line_2])):
-                        desired_line = line_2
-                        ready_for_print = True
+                pastFile = generalPath + desiredMonthInput + desiredYearInput + ".txt"
+                pastFileRead = open(pastFile,encoding="utf8")
+                desiredLine = 0
+                pastFileContent = []
+                foundState = False
+                for l in pastFileRead:
+                    pastFileContent.append(l)
+                for m in range(len(pastFileContent)):
+                    if ((str(desiredDayInput)+',' in pastFileContent[m])and(desiredMonthInput.title() in pastFileContent[m])and(desiredYearInput in pastFileContent[m])):
+                        desiredLine = m
+                        foundState = True
                         break
-                if(ready_for_print == True):
-                    print(file_content[desired_line+1])
-                    valid_day = False
-                    valid_month = False 
-                    valid_year = False
-                    keep_going = input("\nWould you like to read another day ('Y' or 'y' or 'N' or 'n')?")
-                    if keep_going == "y" or keep_going == "Y":
-                        keep_going_state = True
+                if(foundState == True):
+                    print(pastFileContent[desiredLine+1])
+                    validDay = False
+                    validMonth = False 
+                    validYear = False
+                    keepGoing = input("\nWould you like to read another day ('Y' or 'y' or 'N' or 'n')?")
+                    if keepGoing == "y" or keepGoing == "Y":
+                        keepGoingState = True
                     else:
-                        keep_going_state = False
+                        keepGoingState = False
                 else:
-                    print("You don't have a log for "+desired_month+" "+str(desired_day)+", "+desired_year)
+                    print("You don't have a log for "+desiredMonthInput+" "+str(desiredDayInput)+", "+desiredYearInput)
                     break
-            edit_or_read = input("\n1: Edit Today\n2: View Past\n3: Today's History\n[ENTER]: Exit\n")
+            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
 
-        #VIEW HISTORY SECTION
-        elif edit_or_read == '3':
-            line=0
-            fileList = []
-            SpecificMonthList = []
-            desired_pages = []
-            section = []
+# Mode 3 will allow you to read the current day's past logs. For example, if the current day is January 03, 2020, you will be able to see your log entry for January 03, 2019/2018/etc.
+
+#txtList holds all of the .txt files in the generalPath directory
+
+#empty is a boolean that determines whether there are past entries of the current day
+
+#pastMonthList is a list of all the files in the general path with the same month as the current month
+
+#pastContentList will hold the content of each of the month files from pastMonthList
+
+#pastFileRead is just the buffer that actually reads each month's file
+
+#mergeList is just a big list that appends all the content in pastContentList
+        elif modeSelect == '3':
+            txtList = []
+            pastMonthList = []
+            mergeList = []
         
-            for filename in os.listdir(Location):
-                    if filename.endswith(".txt"):
-                        fileList.append(filename)
+            for i in os.listdir(generalPath):
+                    if i.endswith(".txt"):
+                        txtList.append(i)
+
             empty = False           
-            for item_1 in fileList:
-                if (month in item_1)and(year not in item_1 ):
+            for j in txtList:
+                if (month in j)and(year not in j ):
                     empty= True
             if empty==False:
                 print("\nThere are no past logs of today")
        
-            for item_2 in fileList:
-                if (month in item_2)and(year not in item_2 ):
-                    SpecificMonthList.append(item_2)
+            for k in txtList:
+                if (month in k)and(year not in k ):
+                    pastMonthList.append(k)
     
-            for desired_month in SpecificMonthList:        
-                desired_file = open(Location+desired_month,encoding="utf8")
-                contentList = []
-                for line_1 in desired_file:
-                    contentList.append(line_1)
-                desired_pages.append(contentList)
+            for l in pastMonthList:        
+                pastFileRead = open(generalPath+l,encoding="utf8")
+                pastContentList = []
+                for m in pastFileRead:
+                    pastContentList.append(m)
+                mergeList.append(pastContentList)
 
-            for page in range(len(desired_pages)):            
-                for line_1 in range(len(desired_pages[page])):
-                    if ((day+',' in desired_pages[page][line_1])and(month in desired_pages[page][line_1])):
-                        print(desired_pages[page][line_1]+"\n"+desired_pages[page][line_1+1])
-            edit_or_read = input("\n1: Edit Today\n2: View Past\n3: Today's History\n[ENTER]: Exit\n")
+            for n in range(len(mergeList)):            
+                for o in range(len(mergeList[n])):
+                    if ((day+',' in mergeList[n][o])and(month in mergeList[n][o])):
+                        print(mergeList[n][o]+"\n"+mergeList[n][o+1])
+            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
 
-        #elif edit_or_read == '4':    
-            #change_yes_or_no = input("Are you sure that you want to change your password?\nType 'y' for YES\nType 'n' for NO\t")
-            #if ((change_yes_or_no == 'y')or(change_yes_or_no == 'Y')):
-             #   newpass = False
-              #  while newpass == False:
-               #     new_password = input("Enter your new password:\t")
-                #    yes2_or_no2 = input("\nAre you sure you want your password to be "+new_password+"?\nType 'y' for YES\nType 'n' for NO\t")
-                 #   if((yes2_or_no2 == 'y') or (yes2_or_no2 == 'Y')):
-                  #      password_file = open(Passowrd_Location,encoding="utf8",mode='w')
-                   #     password_file.write(new_password)
-                    #    password_file.close()
-                     #   newpass = True
+#txtList is a list with all the text files found in the generalPath directory
 
+#searchValue holds the user input for the word or phrase they are wanting to scan for
+
+#pastFileRead is the buffer that actually holds what is actually read from the the files
+
+#pastContent stores what is being read from pastFileRead
+
+#mergeList is just a big list that appends all the content in pastContentList
+        elif modeSelect == '4':
+            txtList = []
+            mergeList = []
+            pastContent = []
+            count = 0
+
+            for i in os.listdir(generalPath):
+                if(i.endswith('.txt')):
+                    txtList.append(i)
+            
+            searchValue = input("Enter what you want to search for: \n")
+            for j in txtList:
+                pastFileRead = open(generalPath+j,encoding="utf8")
+                for k in pastFileRead:
+                    pastContent.append(k)
+            mergeList.append(pastContent)
+
+            for l in range(len(mergeList)):
+                for m in range(len(mergeList[l])):
+                    if(searchValue in mergeList[l][m]):
+                        #print(mergeList[l][m-1]+"\n"+mergeList[l][m])
+                        date = mergeList[l][m-1]
+                        entry = mergeList[l][m]
+                        colorama.init()
+                        print(date+"\n"+entry.replace(searchValue,"\033[44;23m"+searchValue+"\033[m"))
+            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
 
 
 
