@@ -325,7 +325,7 @@ if os.path.exists(passwordLocation):
             for n in range(len(mergeList)):            
                 for o in range(len(mergeList[n])):
                     if ((day+',' in mergeList[n][o])and(month in mergeList[n][o])):
-                        print(mergeList[n][o]+"\n"+mergeList[n][o+1])
+                        print(mergeList[n][o]+"\n"+mergeList[n][o+1]+"\n")
             modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -351,6 +351,7 @@ if os.path.exists(passwordLocation):
                     txtList.append(i)
             
             searchValue = input("Enter what you want to search for: \n")
+            
             for j in txtList:
                 pastFileRead = open(generalPath+j,encoding="utf8")
                 for k in pastFileRead:
@@ -359,13 +360,26 @@ if os.path.exists(passwordLocation):
 
             for l in range(len(mergeList)):
                 for m in range(len(mergeList[l])):
-                    if(searchValue in mergeList[l][m]):
-                        #print(mergeList[l][m-1]+"\n"+mergeList[l][m])
+                    if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])):
                         date = mergeList[l][m-1]
                         entry = mergeList[l][m]
                         colorama.init()
-                        print(date+"\n"+entry.replace(searchValue,"\033[44;23m"+searchValue+"\033[m"))
+                        # ex.) Hello World
+                        if(searchValue.title() in mergeList[l][m]):
+                            print(date+"\n"+entry.replace(searchValue.title(),"\033[44;23m"+searchValue.title()+"\033[m"))
+                        # ex.) [The exact way you typed it when prompted]
+                        if(searchValue in mergeList[l][m]):
+                            print(date+"\n"+entry.replace(searchValue,"\033[44;23m"+searchValue+"\033[m"))
+                        # ex.) HELLO WORLD
+                        if(searchValue.upper() in mergeList[l][m]):
+                            print(date+"\n"+entry.replace(searchValue.upper(),"\033[44;23m"+searchValue.upper()+"\033[m"))
+                        # ex.) hello world
+                        if(searchValue.lower() in mergeList[l][m]):
+                            print(date+"\n"+entry.replace(searchValue.lower(),"\033[44;23m"+searchValue.lower()+"\033[m"))
             modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+        else:
+            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+
 
 
 
