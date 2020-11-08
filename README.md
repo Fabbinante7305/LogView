@@ -7,3 +7,7 @@ For the past several years, I have developed a habit of keeping track of what ha
 2.) Search for a specific date (if logged)
 
 3.) Display the current date in past years (Ex. May 15 on 2020, 2019, and 2018)
+
+4.) Search for certain words throughout the entire directory
+
+Note I also have a way of you making a password to access all of the logs though it may be a very weak system now. I will keep working to make it better however. 
