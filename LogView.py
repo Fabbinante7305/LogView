@@ -1,7 +1,49 @@
 from datetime import datetime
 import os
 import colorama
+from colorama import Fore, Back, Style
+from pathlib import Path
 import sys
+
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+
+# Colored print functions
+
+colorama.init()
+
+def prRed(skk): print("\033[91m {}\033[00m" .format(skk)) 
+def prGreen(skk): print("\033[92m {}\033[00m" .format(skk)) 
+def prYellow(skk): print("\033[93m {}\033[00m" .format(skk)) 
+def prLightPurple(skk): print("\033[94m {}\033[00m" .format(skk)) 
+def prPurple(skk): print("\033[95m {}\033[00m" .format(skk)) 
+def prCyan(skk): print("\033[96m {}\033[00m" .format(skk)) 
+def prLightGray(skk): print("\033[97m {}\033[00m" .format(skk)) 
+def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
+
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+
+#This is the function that will display the menu
+
+#modeSelect here is set as a global variable so that its value can be read in modes 1-4
+
+modeSelect = ""
+
+def menu():
+    print(Fore.LIGHTGREEN_EX)
+    print("\n**************************************************")
+    print("**************************************************")
+
+    print("**             [  1  ] Edit Today               **\n**             [  2  ] View Past                **\n**             [  3  ] Today's History          **\n**             [  4  ] Search                   **\n**             [ENTER] Exit                     **")
+    print("**************************************************")
+    print("**************************************************")
+    print(Fore.WHITE)
+    global modeSelect 
+    modeSelect = input()
+
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -31,6 +73,9 @@ passwordLocation = generalPath+"Password.txt"
 if not os.path.exists(generalPath):
     os.makedirs(generalPath)
 
+#created= os.stat('file.txt').st_ctime
+
+
 passwordCreationState = False
 while passwordCreationState == False:
     if not os.path.exists(passwordLocation):
@@ -49,7 +94,9 @@ while passwordCreationState == False:
 if os.path.exists(passwordLocation):    
     passwordState = False
     while passwordState != True:
-        inputPassword = input("\nEnter Password: ")
+        print(Fore.WHITE)
+        print("Enter Password: " + Fore.BLACK)
+        inputPassword = input()
         passwordFile = open(passwordLocation,encoding="utf8",mode='r')
         password = passwordFile.read()
         if inputPassword == password:
@@ -74,8 +121,9 @@ if os.path.exists(passwordLocation):
 #today holds the file name of the current month-year log as "C:\Users\ecoce\OneDrive\MyLog\\October2020.txt"
 
 #todayLoggedState holds a boolean value for if the user has already logged the current day's date
-
-    modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+    
+    
+    menu()
     while(modeSelect != ""):
         date = datetime.now()
         year = date.strftime('%Y')
@@ -83,6 +131,7 @@ if os.path.exists(passwordLocation):
         month = date.strftime('%B')
         today = generalPath+month+year+".txt"
         todayLoggedState = False
+
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -128,15 +177,15 @@ if os.path.exists(passwordLocation):
                     entryInputAppend.write(entryInput)    
                     entryInputAppend.close()
                 else:
-                    print("\nYou have already logged an entry for " + month + "/" + day + "/"+ year + "\n")
-                modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+                    prRed("\nYou have already logged an entry for " + month + "/" + day + "/"+ year + "\n")
+                menu()
             else:
                 entryInput = input("Enter your log entry for " + month + "/" + day + "/"+ year + "\n")
                 entryInputAppend = open(today,'a+')
                 entryInputAppend.write("\n"+ month + " " + day + ", " + year + "\n")
                 entryInputAppend.write(entryInput)    
                 entryInputAppend.close()
-                modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+                menu()
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -194,7 +243,10 @@ if os.path.exists(passwordLocation):
                 #YEAR CHECK
                 invalidYear = False
                 while validYear == False:
-                    desiredYearInput = input("\nEnter the desired year ('2017' for example):\n")
+                    print(Fore.LIGHTYELLOW_EX)
+                    print("Enter the desired year ('2017' for example):")
+                    print(Fore.WHITE)
+                    desiredYearInput = input()
                     for j in txtList:
                         if ((desiredYearInput.isdigit())and(desiredYearInput in j)):
                             validYear = True
@@ -203,25 +255,31 @@ if os.path.exists(passwordLocation):
                         else:
                             invalidYear = True
                     if(invalidYear == True):
-                        print("\nYou do not have any logs for the year "+desiredYearInput+"\n")       
+                        prRed("\nYou do not have any logs for the year "+desiredYearInput)       
                 #MONTH CHECK
                 invalidMonth = False
                 while validMonth == False:
-                    desiredMonthInput = input("\nEnter the desired month ('January' for example):\n")
+                    print(Fore.LIGHTYELLOW_EX)
+                    print("Enter the desired month ('January' for example):")
+                    print(Fore.WHITE)
+                    desiredMonthInput = input()
                     for k in txtList:
-                        if desiredMonthInput in k:
+                        if ((desiredMonthInput in k)and(desiredYearInput in k)):
                             validMonth = True
                             invalidMonth = False
                             break
                         else:
                             invalidMonth = True
                     if(invalidMonth == True):
-                        print("\nYou do not have any logs for the month "+desiredMonthInput+"\n")                        
+                        prRed("\nYou do not have any logs for the month "+desiredMonthInput)                        
                 #DAY CHECK
                 while validDay == False:
                     isdigit = False
                     while isdigit == False:
-                        desiredDayInput = input("\nEnter the desired day ('05' for example):\n")
+                        print(Fore.LIGHTYELLOW_EX)
+                        print("Enter the desired day ('05' for example):")
+                        print(Fore.WHITE)
+                        desiredDayInput = input()
                         if desiredDayInput.isdigit():
                             desiredDayInput = int(desiredDayInput)
                             isdigit = True
@@ -232,15 +290,15 @@ if os.path.exists(passwordLocation):
                             validDay = True
                             break
                         else:
-                            print("\nYou have entered an invalid day for the month of "+ desiredMonthInput+"\n")
+                            prRed("\nYou have entered an invalid day for the month of "+ desiredMonthInput)
                             validDay = False
 
-                    if desiredMonthInput == "April"or"June"or"September"or"November":
+                    if ((desiredMonthInput == "April")or(desiredMonthInput == "June")or(desiredMonthInput == "September")or(desiredMonthInput == "November")):
                         if (desiredDayInput > 0) and (desiredDayInput <= 30):
                             validDay = True
                             break
                         else:
-                            print("\nYou have entered an invalid day for the month of "+ desiredMonthInput+"\n")
+                            prRed("\nYou have entered an invalid day for the month of "+ desiredMonthInput)
                             validDay = False
 
                     if desiredMonthInput == "February":
@@ -248,7 +306,7 @@ if os.path.exists(passwordLocation):
                             validDay = True
                             break
                         else:
-                            print("\nYou have entered an invalid day for the month of "+ desiredMonthInput+"\n")
+                            prRed("\nYou have entered an invalid day for the month of "+ desiredMonthInput)
                             validDay = False
 
                 #PRINTING THE DAY
@@ -265,19 +323,22 @@ if os.path.exists(passwordLocation):
                         foundState = True
                         break
                 if(foundState == True):
-                    print(pastFileContent[desiredLine+1])
+                    print(Fore.WHITE)
+                    print(pastFileContent[desiredLine] + "\n" +  pastFileContent[desiredLine+1])
                     validDay = False
                     validMonth = False 
                     validYear = False
-                    keepGoing = input("\nWould you like to read another day ('Y' or 'y' or 'N' or 'n')?")
+                    print(Fore.LIGHTYELLOW_EX + "Would you like to read another day ('Y' or 'y' or 'N' or 'n')?")
+                    print(Fore.WHITE)
+                    keepGoing = input()
                     if keepGoing == "y" or keepGoing == "Y":
                         keepGoingState = True
                     else:
                         keepGoingState = False
                 else:
-                    print("You don't have a log for "+desiredMonthInput+" "+str(desiredDayInput)+", "+desiredYearInput)
+                    prRed("You don't have a log for "+desiredMonthInput+" "+str(desiredDayInput)+", "+desiredYearInput)
                     break
-            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+            menu()
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -299,7 +360,9 @@ if os.path.exists(passwordLocation):
             txtList = []
             pastMonthList = []
             mergeList = []
-        
+            
+            print(Fore.LIGHTBLUE_EX + "\n************************************************************************************************************************************************************************************************************************************************")
+
             for i in os.listdir(generalPath):
                     if i.endswith(".txt"):
                         txtList.append(i)
@@ -309,7 +372,10 @@ if os.path.exists(passwordLocation):
                 if (month in j)and(year not in j ):
                     empty= True
             if empty==False:
-                print("\nThere are no past logs of today")
+                print(Fore.LIGHTBLUE_EX + "\n************************************************************************************************************************************************************************************************************************************************\n")
+                prRed("There are no past logs of today")
+                print(Fore.LIGHTBLUE_EX + "\n************************************************************************************************************************************************************************************************************************************************\n")
+
        
             for k in txtList:
                 if (month in k)and(year not in k ):
@@ -325,8 +391,12 @@ if os.path.exists(passwordLocation):
             for n in range(len(mergeList)):            
                 for o in range(len(mergeList[n])):
                     if ((day+',' in mergeList[n][o])and(month in mergeList[n][o])):
+                        print(Fore.WHITE)
                         print(mergeList[n][o]+"\n"+mergeList[n][o+1]+"\n")
-            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+
+            print(Fore.LIGHTBLUE_EX + "************************************************************************************************************************************************************************************************************************************************")
+
+            menu()
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -344,41 +414,55 @@ if os.path.exists(passwordLocation):
             txtList = []
             mergeList = []
             pastContent = []
-            count = 0
+            searchCount = 0
 
-            for i in os.listdir(generalPath):
-                if(i.endswith('.txt')):
+            sortedDirectory = sorted(Path(generalPath).iterdir(), key = os.path.getctime)
+
+            for i in sortedDirectory:
+                if(i.suffix == ".txt"):
                     txtList.append(i)
-            
-            searchValue = input("Enter what you want to search for: \n")
-            
+            print(Fore.LIGHTYELLOW_EX)
+            print("Enter what you want to search for:")
+            print(Fore.WHITE)
+            searchValue = input()
             for j in txtList:
-                pastFileRead = open(generalPath+j,encoding="utf8")
+                pastFileRead = open(j,encoding="utf8")
                 for k in pastFileRead:
                     pastContent.append(k)
             mergeList.append(pastContent)
 
             for l in range(len(mergeList)):
                 for m in range(len(mergeList[l])):
-                    if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])):
+                    if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])or(searchValue.upper() in mergeList[l][m])or(searchValue.lower() in mergeList[l][m])):
+                        searchCount = searchCount + 1
+
+            prLightPurple("\n************************************************************************************************************************************************************************************************************************************************\n")
+            
+            for l in range(len(mergeList)):
+                for m in range(len(mergeList[l])):
+                    if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])or(searchValue.upper() in mergeList[l][m])or(searchValue.lower() in mergeList[l][m])):
                         date = mergeList[l][m-1]
                         entry = mergeList[l][m]
-                        colorama.init()
+                        
                         # ex.) Hello World
                         if(searchValue.title() in mergeList[l][m]):
-                            print(date+"\n"+entry.replace(searchValue.title(),"\033[44;23m"+searchValue.title()+"\033[m"))
+                            print(date+"\n"+entry.replace(searchValue.title(),"\033[44;23m"+searchValue+"\033[m"))
                         # ex.) [The exact way you typed it when prompted]
-                        if(searchValue in mergeList[l][m]):
+                        elif(searchValue in mergeList[l][m]):
                             print(date+"\n"+entry.replace(searchValue,"\033[44;23m"+searchValue+"\033[m"))
                         # ex.) HELLO WORLD
-                        if(searchValue.upper() in mergeList[l][m]):
-                            print(date+"\n"+entry.replace(searchValue.upper(),"\033[44;23m"+searchValue.upper()+"\033[m"))
+                        elif(searchValue.upper() in mergeList[l][m]):
+                            print(date+"\n"+entry.replace(searchValue.upper(),"\033[44;23m"+searchValue+"\033[m"))
                         # ex.) hello world
-                        if(searchValue.lower() in mergeList[l][m]):
-                            print(date+"\n"+entry.replace(searchValue.lower(),"\033[44;23m"+searchValue.lower()+"\033[m"))
-            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+                        elif(searchValue.lower() in mergeList[l][m]):
+                            print(date+"\n"+entry.replace(searchValue.lower(),"\033[44;23m"+searchValue+"\033[m"))
+
+            print(Fore.LIGHTCYAN_EX)
+            print("You have " + str(searchCount) + " matches for " + searchValue + "\n")
+            prLightPurple("\n************************************************************************************************************************************************************************************************************************************************")
+            menu()
         else:
-            modeSelect = input("\n1: Edit Today\n2: View Past\n3: Today's History\n4: Search\n[ENTER]: Exit\n")
+            menu()
 
 
 
