@@ -171,16 +171,20 @@ if os.path.exists(passwordLocation):
                     if ((str(day)+',' in todayFileContent[l])and(month in todayFileContent[l])and(year in todayFileContent[l])):
                         todayLoggedState = True
                 if todayLoggedState == False:
-                    entryInput = input("Enter your log entry for " + month + "/" + day + "/"+ year + "\n")
+                    print(Fore.LIGHTMAGENTA_EX + "\nEnter your log entry for " + month + "/" + day + "/"+ year)
+                    print(Fore.LIGHTCYAN_EX)
+                    entryInput = input()
                     entryInputAppend = open(today,'a+')
                     entryInputAppend.write("\n"+ month + " " + day + ", " + year + "\n")
                     entryInputAppend.write(entryInput)    
                     entryInputAppend.close()
                 else:
-                    prRed("\nYou have already logged an entry for " + month + "/" + day + "/"+ year + "\n")
+                    prRed("\nYou have already logged an entry for " + month + "/" + day + "/"+ year)
                 menu()
             else:
-                entryInput = input("Enter your log entry for " + month + "/" + day + "/"+ year + "\n")
+                print(Fore.LIGHTMAGENTA_EX + "\nEnter your log entry for " + month + "/" + day + "/"+ year)
+                print(Fore.LIGHTCYAN_EX)
+                entryInput = input()
                 entryInputAppend = open(today,'a+')
                 entryInputAppend.write("\n"+ month + " " + day + ", " + year + "\n")
                 entryInputAppend.write(entryInput)    
@@ -463,20 +467,3 @@ if os.path.exists(passwordLocation):
             menu()
         else:
             menu()
-
-
-
-
-
-                
-
-
-    
-
-
-    
-
-
-        
-    
-    
