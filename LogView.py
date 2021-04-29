@@ -1,9 +1,12 @@
 from datetime import datetime
 import os
-import colorama
 from colorama import Fore, Back, Style
+from tkinter import *
+import tkinter
+import colorama
 from pathlib import Path
 import sys
+import subprocess
 
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -40,7 +43,7 @@ def menu():
     print("**             [  1  ] Edit Today               **\n**             [  2  ] View Past                **\n**             [  3  ] Today's History          **\n**             [  4  ] Search                   **\n**             [ENTER] Exit                     **")
     print("**************************************************")
     print("**************************************************")
-    print(Fore.WHITE)
+    print(Fore.LIGHTWHITE_EX)
     global modeSelect 
     modeSelect = input()
 
@@ -72,9 +75,7 @@ passwordLocation = generalPath+"Password.txt"
 
 if not os.path.exists(generalPath):
     os.makedirs(generalPath)
-
-#created= os.stat('file.txt').st_ctime
-
+    subprocess.check_call(["attrib","+H",generalPath])
 
 passwordCreationState = False
 while passwordCreationState == False:
@@ -94,7 +95,7 @@ while passwordCreationState == False:
 if os.path.exists(passwordLocation):    
     passwordState = False
     while passwordState != True:
-        print(Fore.WHITE)
+        print(Fore.LIGHTWHITE_EX)
         print("Enter Password: " + Fore.BLACK)
         inputPassword = input()
         passwordFile = open(passwordLocation,encoding="utf8",mode='r')
@@ -105,6 +106,19 @@ if os.path.exists(passwordLocation):
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
+
+    date = datetime.now()
+    year = date.strftime('%Y')
+    day = date.strftime('%d')
+    month = date.strftime('%B')
+    today = generalPath+month+year+".txt"
+    
+
+
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+
 
 #This section sets up the main menu prompt
 
@@ -131,6 +145,8 @@ if os.path.exists(passwordLocation):
         month = date.strftime('%B')
         today = generalPath+month+year+".txt"
         todayLoggedState = False
+
+        
 
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -249,10 +265,10 @@ if os.path.exists(passwordLocation):
                 while validYear == False:
                     print(Fore.LIGHTYELLOW_EX)
                     print("Enter the desired year ('2017' for example):")
-                    print(Fore.WHITE)
+                    print(Fore.LIGHTWHITE_EX)
                     desiredYearInput = input()
                     for j in txtList:
-                        if ((desiredYearInput.isdigit())and(desiredYearInput in j)):
+                        if ((desiredYearInput.isdigit())and(int(desiredYearInput)>2000)and(desiredYearInput in j)):
                             validYear = True
                             invalidYear = False
                             break
@@ -265,10 +281,10 @@ if os.path.exists(passwordLocation):
                 while validMonth == False:
                     print(Fore.LIGHTYELLOW_EX)
                     print("Enter the desired month ('January' for example):")
-                    print(Fore.WHITE)
+                    print(Fore.LIGHTWHITE_EX)
                     desiredMonthInput = input()
                     for k in txtList:
-                        if ((desiredMonthInput in k)and(desiredYearInput in k)):
+                        if ((desiredMonthInput in k)and((desiredMonthInput=="January")or(desiredMonthInput=="February")or(desiredMonthInput=="March")or(desiredMonthInput=="April")or(desiredMonthInput=="May")or(desiredMonthInput=="June")or(desiredMonthInput=="July")or(desiredMonthInput=="August")or(desiredMonthInput=="September")or(desiredMonthInput=="October")or(desiredMonthInput=="November")or(desiredMonthInput=="December"))and(desiredMonthInput+desiredYearInput in k)):
                             validMonth = True
                             invalidMonth = False
                             break
@@ -282,12 +298,16 @@ if os.path.exists(passwordLocation):
                     while isdigit == False:
                         print(Fore.LIGHTYELLOW_EX)
                         print("Enter the desired day ('05' for example):")
-                        print(Fore.WHITE)
+                        print(Fore.LIGHTWHITE_EX)
                         desiredDayInput = input()
                         if desiredDayInput.isdigit():
                             desiredDayInput = int(desiredDayInput)
                             isdigit = True
                             break
+                        else:
+                            prRed("\nPlease enter a valid day")
+                            isdigit = False
+
 
                     if(desiredMonthInput == "January")or(desiredMonthInput =="March")or(desiredMonthInput =="May")or(desiredMonthInput =="July")or(desiredMonthInput =="August")or(desiredMonthInput =="October")or(desiredMonthInput =="December"):
                         if (desiredDayInput > 0) and (desiredDayInput <= 31):
@@ -313,6 +333,7 @@ if os.path.exists(passwordLocation):
                             prRed("\nYou have entered an invalid day for the month of "+ desiredMonthInput)
                             validDay = False
 
+
                 #PRINTING THE DAY
                 pastFile = generalPath + desiredMonthInput + desiredYearInput + ".txt"
                 pastFileRead = open(pastFile,encoding="utf8")
@@ -321,19 +342,65 @@ if os.path.exists(passwordLocation):
                 foundState = False
                 for l in pastFileRead:
                     pastFileContent.append(l)
+                pastFileRead.close()
                 for m in range(len(pastFileContent)):
                     if ((str(desiredDayInput)+',' in pastFileContent[m])and(desiredMonthInput.title() in pastFileContent[m])and(desiredYearInput in pastFileContent[m])):
                         desiredLine = m
                         foundState = True
                         break
                 if(foundState == True):
-                    print(Fore.WHITE)
+                    print(Fore.LIGHTWHITE_EX)
                     print(pastFileContent[desiredLine] + "\n" +  pastFileContent[desiredLine+1])
                     validDay = False
                     validMonth = False 
                     validYear = False
+                    print("Would you like to edit this entry?\t")
+                    edit = input()
+                    if(edit == 'y'):
+                    
+
+                        root = Tk()
+                        ws = root.winfo_screenwidth()
+                        hs = root.winfo_screenheight()
+                        x = (ws/2) - (1000/2)
+                        y = (hs/2) - (300/2)
+                        root.geometry('%dx%d+%d+%d' % (1000, 300, x, y))
+                        root['bg']='#002233'
+
+                        def saveExit():
+                            pastFileRead = open(pastFile,'r',encoding='utf-8')
+                            replaced_content = ""
+                            for line in pastFileRead:
+                                if pastFileContent[desiredLine + 1] in line:
+                                    new_line = line.replace(pastFileContent[desiredLine+1],editEntryBox.get(1.0,"end-1c")+"\n")
+                                else:
+                                    new_line = line
+                            
+                                replaced_content = replaced_content + new_line
+                            
+                            pastFileRead.close()
+                            write_file = open(pastFile,'w',encoding='utf-8')
+                            write_file.write(replaced_content)
+                            write_file.close()                    
+                            root.destroy()
+
+                        editEntryBox = Text(root, height=7, width=104)                    
+                        label = Label(root, text = pastFileContent[desiredLine] + "\n")
+                    
+                        label.config(font=("Courier",14),height = 2,anchor=N)
+
+                        editEntryBox.insert(END,pastFileContent[desiredLine+1])
+                        saveExitButton = tkinter.Button(root,text = "Save and Exit", command = saveExit)                        
+                    
+                        saveExitButton.place(x=450,y=240)
+                        #label.place(x=400,y=10,height=40)
+                        label.pack(anchor=S,pady=20)
+                        editEntryBox.place(x=80,y=80)
+
+                        root.mainloop()
+                    ##############################################                    
                     print(Fore.LIGHTYELLOW_EX + "Would you like to read another day ('Y' or 'y' or 'N' or 'n')?")
-                    print(Fore.WHITE)
+                    print(Fore.LIGHTWHITE_EX)
                     keepGoing = input()
                     if keepGoing == "y" or keepGoing == "Y":
                         keepGoingState = True
@@ -395,7 +462,7 @@ if os.path.exists(passwordLocation):
             for n in range(len(mergeList)):            
                 for o in range(len(mergeList[n])):
                     if ((day+',' in mergeList[n][o])and(month in mergeList[n][o])):
-                        print(Fore.WHITE)
+                        print(Fore.LIGHTWHITE_EX)
                         print(mergeList[n][o]+"\n"+mergeList[n][o+1]+"\n")
 
             print(Fore.LIGHTBLUE_EX + "************************************************************************************************************************************************************************************************************************************************")
@@ -427,7 +494,7 @@ if os.path.exists(passwordLocation):
                     txtList.append(i)
             print(Fore.LIGHTYELLOW_EX)
             print("Enter what you want to search for:")
-            print(Fore.WHITE)
+            print(Fore.LIGHTWHITE_EX)
             searchValue = input()
             for j in txtList:
                 pastFileRead = open(j,encoding="utf8")
@@ -467,3 +534,5 @@ if os.path.exists(passwordLocation):
             menu()
         else:
             menu()
+
+    
