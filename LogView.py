@@ -5,11 +5,13 @@ from tkinter import *
 import tkinter
 import colorama
 from pathlib import Path
+import re
 import sys
 import subprocess
 
 ###############################################################################################################################################################################################################
-###############################################################################################################################################################################################################
+
+
 ###############################################################################################################################################################################################################
 
 # Colored print functions
@@ -24,6 +26,14 @@ def prPurple(skk): print("\033[95m {}\033[00m" .format(skk))
 def prCyan(skk): print("\033[96m {}\033[00m" .format(skk)) 
 def prLightGray(skk): print("\033[97m {}\033[00m" .format(skk)) 
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
+generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
+
+date = datetime.now()
+year = date.strftime('%Y')
+day = date.strftime('%d')
+month = date.strftime('%B')
+monthNum = date.month
+today = generalPath+month+year+".txt"
 
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -32,15 +42,136 @@ def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 #This is the function that will display the menu
 
 #modeSelect here is set as a global variable so that its value can be read in modes 1-4
-
 modeSelect = ""
 
 def menu():
     print(Fore.LIGHTGREEN_EX)
     print("\n**************************************************")
     print("**************************************************")
+    print("**             [  1  ] Edit Today               **\n**             [  2  ] View Past                **\n**             [  3  ] Today's History          **\n**             [  4  ] Search                   **\n**             [  5  ] Add Birthday             **\n**             [  6  ] Stats                    **\n**             [ENTER] Exit                     **")
+    print("**************************************************")
+    print("**************************************************")
+    print(Fore.LIGHTWHITE_EX)
+    global modeSelect 
+    modeSelect = input()
 
-    print("**             [  1  ] Edit Today               **\n**             [  2  ] View Past                **\n**             [  3  ] Today's History          **\n**             [  4  ] Search                   **\n**             [ENTER] Exit                     **")
+
+modeSelect = ""
+def mainMenu():
+    f = open(generalPath+"\Birthdays\Birthdays.txt",'r')
+    fileRead = f.readlines()
+    f.close()
+    prPurple("Birthdays...")
+    nearestBirthMonth = []
+
+    for i in fileRead:
+        #Separates First Name, Last Name, Month, and Day
+        i_split = i.split()
+        
+        value = 0
+        if(i_split[2] == "January"):
+            value = 1
+        if(i_split[2] == "February"):
+            value = 2
+        if(i_split[2] == "March"):
+            value = 3
+        if(i_split[2] == "April"):
+            value = 4
+        if(i_split[2] == "May"):
+            value = 5
+        if(i_split[2] == "June"):
+            value = 6
+        if(i_split[2] == "July"):
+            value = 7
+        if(i_split[2] == "August"):
+            value = 8
+        if(i_split[2] == "September"):
+            value = 9
+        if(i_split[2] == "October"):
+            value = 10
+        if(i_split[2] == "November"):
+            value = 11
+        if(i_split[2] == "December"):
+            value = 12
+        
+        #Since we are looking for upcoming birthdays, we forget about the past months and get the current and future months
+        
+        if(value>=monthNum):
+                if(value==monthNum):
+                    if(i_split[3]>day):
+                        nearestBirthMonth.append(value)
+                else:
+                    nearestBirthMonth.append(value)        
+        
+
+        #If it finds a match for a birthday on the current day of the current month and finds the last name as well as the first name, it will print the first and last name
+        if((i_split[2] == month)and(i_split[3]==day)and(i_split[1]!='X')):
+            prPurple(i_split[0]+ " "+ i_split[1])
+        #If it finfds a match for a birthday on the current day of the current month and only finds the first name, it will print the first name
+        if((i_split[2] == month)and(i_split[3]==day)and(i_split[1]=='X')):
+                prPurple(i_split[0])
+    
+    #Gets the soonest month from the current month
+    closestMonth = min(nearestBirthMonth)
+
+    closestMonthStr = ""
+    if(str(closestMonth) == "1"):
+        closestMonthStr = "January"
+    if(str(closestMonth) == "2"):
+        closestMonthStr = "February"
+    if(str(closestMonth) == "3"):
+        closestMonthStr = "March"
+    if(str(closestMonth) == "4"):
+        closestMonthStr = "April"
+    if(str(closestMonth) == "5"):
+        closestMonthStr = "May"
+    if(str(closestMonth) == "6"):
+        closestMonthStr = "June"
+    if(str(closestMonth) == "7"):
+        closestMonthStr = "July"
+    if(str(closestMonth) == "8"):
+        closestMonthStr = "August"
+    if(str(closestMonth) == "9"):
+        closestMonthStr = "September"
+    if(str(closestMonth) == "10"):
+        closestMonthStr = "October"
+    if(str(closestMonth) == "11"):
+        closestMonthStr = "November"
+    if(str(closestMonth) == "12"):
+        closestMonthStr = "December"
+    
+    nearestBirthDay = []
+    for i in fileRead:
+        #Separates First Name, Last Name, Month, and Day
+        i_split = i.split()
+        #Searching within the nearest upcoming birthday month
+        if(i_split[2]==closestMonthStr):
+            if(closestMonthStr == month):
+                if(int(i_split[3])>int(day)):
+                    nearestBirthDay.append(i_split[3])
+            else:
+                nearestBirthDay.append(i_split[3])
+
+    #Gets the soonest day on the soonest month for upcoming birthdays
+    closestDay = min(nearestBirthDay)
+
+    for i in fileRead:
+        #Separates First Name, Last Name, Month, and Day
+        i_split = i.split()
+
+        #If it finds a match for a birthday on the current day of the current month and finds the last name as well as the first name, it will print the first and last name
+        if((i_split[2] == closestMonthStr)and(i_split[3]==closestDay)and(i_split[1]!='X')):
+            prPurple("\n Upcoming Birthday...\n "+i_split[0]+ " "+ i_split[1] + " " + closestMonthStr+ " " + closestDay)
+
+        #If it finfds a match for a birthday on the current day of the current month and only finds the first name, it will print the first name
+        if((i_split[2] == closestMonthStr)and(i_split[3]==closestDay)and(i_split[1]=='X')):
+                prPurple("\n Upcoming Birthday...\n "+i_split[0]+ " " + closestMonthStr+ " " + closestDay)
+
+
+    print(Fore.LIGHTGREEN_EX)
+    print("\n**************************************************")
+    print("**************************************************")
+    print("**             [  1  ] Edit Today               **\n**             [  2  ] View Past                **\n**             [  3  ] Today's History          **\n**             [  4  ] Search                   **\n**             [  5  ] Add Birthday             **\n**             [ENTER] Exit                     **")
     print("**************************************************")
     print("**************************************************")
     print(Fore.LIGHTWHITE_EX)
@@ -70,7 +201,7 @@ def menu():
 #inputPassword is the user input when typing the EXISTING/RECORDED password on entry
 
 #password = the actual password that is stored in passwordFile
-generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
+
 passwordLocation = generalPath+"Password.txt"
 
 if not os.path.exists(generalPath):
@@ -112,8 +243,6 @@ if os.path.exists(passwordLocation):
     day = date.strftime('%d')
     month = date.strftime('%B')
     today = generalPath+month+year+".txt"
-    
-
 
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -137,7 +266,7 @@ if os.path.exists(passwordLocation):
 #todayLoggedState holds a boolean value for if the user has already logged the current day's date
     
     
-    menu()
+    mainMenu()
     while(modeSelect != ""):
         date = datetime.now()
         year = date.strftime('%Y')
@@ -493,46 +622,199 @@ if os.path.exists(passwordLocation):
                 if(i.suffix == ".txt"):
                     txtList.append(i)
             print(Fore.LIGHTYELLOW_EX)
-            print("Enter what you want to search for:")
-            print(Fore.LIGHTWHITE_EX)
-            searchValue = input()
-            for j in txtList:
-                pastFileRead = open(j,encoding="utf8")
-                for k in pastFileRead:
-                    pastContent.append(k)
-            mergeList.append(pastContent)
+            print("1.) Single Search")
+            print("2.) Multi Search")
+            searchType = input("Enter which search method you want to use\t")
+            if(searchType == "1"):
 
-            for l in range(len(mergeList)):
-                for m in range(len(mergeList[l])):
-                    if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])or(searchValue.upper() in mergeList[l][m])or(searchValue.lower() in mergeList[l][m])):
-                        searchCount = searchCount + 1
+                print("Enter what you want to search for:")
+                print(Fore.LIGHTWHITE_EX)
+                searchValue = input()
+                for j in txtList:
+                    pastFileRead = open(j,encoding="utf8")
+                    for k in pastFileRead:
+                        pastContent.append(k)
+                mergeList.append(pastContent)
 
-            prLightPurple("\n************************************************************************************************************************************************************************************************************************************************\n")
+                for l in range(len(mergeList)):
+                    for m in range(len(mergeList[l])):
+                        if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])or(searchValue.upper() in mergeList[l][m])or(searchValue.lower() in mergeList[l][m])):
+                            searchCount = searchCount + 1
+
+                prLightPurple("\n************************************************************************************************************************************************************************************************************************************************\n")
             
-            for l in range(len(mergeList)):
-                for m in range(len(mergeList[l])):
-                    if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])or(searchValue.upper() in mergeList[l][m])or(searchValue.lower() in mergeList[l][m])):
-                        date = mergeList[l][m-1]
-                        entry = mergeList[l][m]
+                for l in range(len(mergeList)):
+                    for m in range(len(mergeList[l])):
+                        if((searchValue in mergeList[l][m])or(searchValue.title() in mergeList[l][m])or(searchValue.upper() in mergeList[l][m])or(searchValue.lower() in mergeList[l][m])):
+                            date = mergeList[l][m-1]
+                            entry = mergeList[l][m]
                         
-                        # ex.) Hello World
-                        if(searchValue.title() in mergeList[l][m]):
-                            print(date+"\n"+entry.replace(searchValue.title(),"\033[44;23m"+searchValue+"\033[m"))
-                        # ex.) [The exact way you typed it when prompted]
-                        elif(searchValue in mergeList[l][m]):
-                            print(date+"\n"+entry.replace(searchValue,"\033[44;23m"+searchValue+"\033[m"))
-                        # ex.) HELLO WORLD
-                        elif(searchValue.upper() in mergeList[l][m]):
-                            print(date+"\n"+entry.replace(searchValue.upper(),"\033[44;23m"+searchValue+"\033[m"))
-                        # ex.) hello world
-                        elif(searchValue.lower() in mergeList[l][m]):
-                            print(date+"\n"+entry.replace(searchValue.lower(),"\033[44;23m"+searchValue+"\033[m"))
+                            # ex.) Hello World
+                            if(searchValue.title() in mergeList[l][m]):
+                                print(date+"\n"+entry.replace(searchValue.title(),"\033[44;23m"+searchValue+"\033[m"))
+                            # ex.) [The exact way you typed it when prompted]
+                            elif(searchValue in mergeList[l][m]):
+                                print(date+"\n"+entry.replace(searchValue,"\033[44;23m"+searchValue+"\033[m"))
+                            # ex.) HELLO WORLD
+                            elif(searchValue.upper() in mergeList[l][m]):
+                                print(date+"\n"+entry.replace(searchValue.upper(),"\033[44;23m"+searchValue+"\033[m"))
+                            # ex.) hello world
+                            elif(searchValue.lower() in mergeList[l][m]):
+                                print(date+"\n"+entry.replace(searchValue.lower(),"\033[44;23m"+searchValue+"\033[m"))
 
-            print(Fore.LIGHTCYAN_EX)
-            print("You have " + str(searchCount) + " matches for " + searchValue + "\n")
-            prLightPurple("\n************************************************************************************************************************************************************************************************************************************************")
+                print(Fore.LIGHTCYAN_EX)
+                print("You have " + str(searchCount) + " matches for " + searchValue + "\n")
+                prLightPurple("\n************************************************************************************************************************************************************************************************************************************************")
+                menu()
+            else:
+                searchCount = 0
+                print("Enter all the things that you are searching for in a particular entry:")
+                valueList = []
+                print(Fore.LIGHTWHITE_EX)
+                searchValues = input()
+
+                valueList = searchValues.split(" ")  
+                valueListLength = len(valueList)                  
+
+                for j in txtList:
+                    pastFileRead = open(j,encoding="utf8")
+                    for k in pastFileRead:
+                        pastContent.append(k)
+                mergeList.append(pastContent)
+                singleSearchtruths = []
+                for l in range(len(mergeList)):
+                    for m in range(len(mergeList[l])):
+                        for x in valueList:
+                            if((x in mergeList[l][m])or(x.title() in mergeList[l][m])or(x.upper() in mergeList[l][m])or(x.lower() in mergeList[l][m])):
+                                singleSearchtruths.append("True")
+                            else:
+                                singleSearchtruths.append("False")
+                        if(singleSearchtruths.count("True")==len(singleSearchtruths)):
+                            searchCount = searchCount + 1
+                        singleSearchtruths.clear()
+
+
+                prLightPurple("\n************************************************************************************************************************************************************************************************************************************************\n")
+
+                Llist = []
+                Mlist = []
+                multiSearchtruths = []
+                for l in range(len(mergeList)):
+                    for m in range(len(mergeList[l])):
+                        for x in valueList:
+                            if((x in mergeList[l][m])or(x.title() in mergeList[l][m])or(x.upper() in mergeList[l][m])or(x.lower() in mergeList[l][m])):      
+                                multiSearchtruths.append("True")
+                            else:
+                                multiSearchtruths.append("False")
+                        if((multiSearchtruths.count("True"))==len(multiSearchtruths)):
+                            Llist.append(l)
+                            Mlist.append(m)
+                        multiSearchtruths.clear()
+
+                for u in range(0,len(valueList)):
+                    for y in range(0,len(Llist)):
+                        mergeList[Llist[y]][Mlist[y]] =  mergeList[Llist[y]][Mlist[y]].replace(valueList[u],"\033[44;23m"+valueList[u]+"\033[m")
+                        mergeList[Llist[y]][Mlist[y]] =  mergeList[Llist[y]][Mlist[y]].replace(valueList[u].lower(),"\033[44;23m"+valueList[u]+"\033[m")
+                        mergeList[Llist[y]][Mlist[y]] =  mergeList[Llist[y]][Mlist[y]].replace(valueList[u].title(),"\033[44;23m"+valueList[u]+"\033[m")
+                        mergeList[Llist[y]][Mlist[y]] =  mergeList[Llist[y]][Mlist[y]].replace(valueList[u].upper(),"\033[44;23m"+valueList[u]+"\033[m")
+
+                    while(u + 1<len(valueList)):
+                        u = u+1
+
+                for y in range(0,len(Llist)):
+                    print(mergeList[Llist[y]][Mlist[y]-1])
+                    print(mergeList[Llist[y]][Mlist[y]])
+
+                print(Fore.LIGHTCYAN_EX)
+                print("You have " + str(searchCount) + " matches for ' " + searchValues + " '\n")
+                prLightPurple("\n************************************************************************************************************************************************************************************************************************************************")
+                menu()
+
+        elif modeSelect == '5':
+            print(Fore.LIGHTMAGENTA_EX)
+            print("Is the birthday today?\nType 'y' for YES\nType 'n' for NO\nHit [ENTER] to return to menu\t")
+            today_or_not = input()
+            if ((today_or_not == 'y')or(today_or_not == 'Y')):
+                print("Enter the Person's First Name")
+                first_name = input()
+                print("Enter the person's second name (if not needed, type 'X')")
+                last_name = input()
+                f = open(generalPath+"\Birthdays\Birthdays.txt",'a')
+                f.write("\n" + first_name + " " + last_name + " "+ month+ " " + day)
+                f.close()
+                menu()
+            elif((today_or_not == 'n')or(today_or_not == 'N')):
+                print("Enter the person's first name")
+                first_name = input()
+                print("Enter the person's last name (if not needed, type 'X')")
+                last_name = input()
+                print("Enter "+ first_name + " " + last_name + "'s" + " birthday month")
+                birthday_month = input()
+                print("Enter "+ first_name + " " + last_name + "'s" + " birth day")
+                birth_day = input()
+                f = open(generalPath+"\Birthdays\Birthdays.txt",'a')
+                f.write("\n" + first_name + " " + last_name + " "+ birthday_month+ " " + birth_day)
+                f.close()
+                menu()
+            else:
+                menu()
+
+
+        elif modeSelect == '6':
+            print("\n")
+            monthOrder = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+            pastYear = []
+            for i in txtList:
+                for j in range(1900,int(year)+1):
+                    if((str(j) in i )and(j not in pastYear)):
+                        pastYear.append(j)
+            pastYear.sort()
+
+            monthListSplit = []
+            monthList = []
+
+            for k in txtList:
+                if (("January" in k)or("February" in k)or("March" in k)or("April" in k)or("May" in k)or("June" in k)or("July" in k)or("August" in k)or("September" in k)or("October" in k)or("November" in k)or("December" in k)):
+                    monthListSplit.append(k)
+                    monthList.append(k)
+
+
+            monthListSplit.sort(key=lambda x: monthOrder.index(x.split('_')[0]))
+
+            for i in pastYear:
+                print(str(i))
+                for j in monthListSplit:
+                    if(str(i)in j):
+                        print("\t"+j)
+
+                        count = 0
+                        finalCount = 0
+                        xf =0
+                        iterator = -1
+                        
+                        pastFileRead = open(generalPath+j,encoding="utf8")
+                        pastContentList = []
+                        for m in pastFileRead:
+                            iterator = iterator+1
+                            xf=xf+len(m)
+                            if(("Not Recorded." not in m)and(iterator%2!=0)and(len(m)<=1024)):
+                                count = count + 1
+                            if(len(m)>1014):
+                                count = count+1
+                                iterator = iterator + 2
+                            else:
+                                count = count + 0
+
+                        finalCount = count
+                        print("\t\t"+str(finalCount) + " Logged Entries")
+                        print("\t\t\tSize of File --> "+str(xf))
+
+                        count = 0
+                        finalCount = 0
+                        iterator=-1
+                    
             menu()
         else:
             menu()
-
-    
+       
