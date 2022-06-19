@@ -10,8 +10,6 @@ import sys
 import subprocess
 
 ###############################################################################################################################################################################################################
-
-
 ###############################################################################################################################################################################################################
 
 # Colored print functions
@@ -45,12 +43,14 @@ today = generalPath+month+year+".txt"
 modeSelect = ""
 
 def menu():
-    print(Fore.LIGHTGREEN_EX)
-    print("\n**************************************************")
-    print("**************************************************")
-    print("**             [  1  ] Edit Today               **\n**             [  2  ] View Past                **\n**             [  3  ] Today's History          **\n**             [  4  ] Search                   **\n**             [  5  ] Add Birthday             **\n**             [  6  ] Stats                    **\n**             [ENTER] Exit                     **")
-    print("**************************************************")
-    print("**************************************************")
+    print(Fore.LIGHTBLUE_EX)
+    print("\n****************************************************************************************************")
+    print("****************************************************************************************************")
+    print(Fore.CYAN)
+    print("**                                     [  1  ] Edit Today                                         **\n**                                     [  2  ] View Past                                          **\n**                                     [  3  ] Today's History                                    **\n**                                     [  4  ] Search                                             **\n**                                     [  5  ] Add Birthday                                       **\n**                                     [ENTER] Exit                                               **")
+    print(Fore.LIGHTBLUE_EX)
+    print("****************************************************************************************************")
+    print("****************************************************************************************************")
     print(Fore.LIGHTWHITE_EX)
     global modeSelect 
     modeSelect = input()
@@ -168,12 +168,14 @@ def mainMenu():
                 prPurple("\n Upcoming Birthday...\n "+i_split[0]+ " " + closestMonthStr+ " " + closestDay)
 
 
-    print(Fore.LIGHTGREEN_EX)
-    print("\n**************************************************")
-    print("**************************************************")
-    print("**             [  1  ] Edit Today               **\n**             [  2  ] View Past                **\n**             [  3  ] Today's History          **\n**             [  4  ] Search                   **\n**             [  5  ] Add Birthday             **\n**             [ENTER] Exit                     **")
-    print("**************************************************")
-    print("**************************************************")
+    print(Fore.LIGHTBLUE_EX)
+    print("\n****************************************************************************************************")
+    print("****************************************************************************************************")
+    print(Fore.CYAN)
+    print("**                                     [  1  ] Edit Today                                         **\n**                                     [  2  ] View Past                                          **\n**                                     [  3  ] Today's History                                    **\n**                                     [  4  ] Search                                             **\n**                                     [  5  ] Add Birthday                                       **\n**                                     [ENTER] Exit                                               **")
+    print(Fore.LIGHTBLUE_EX)
+    print("****************************************************************************************************")
+    print("****************************************************************************************************")
     print(Fore.LIGHTWHITE_EX)
     global modeSelect 
     modeSelect = input()
@@ -242,7 +244,57 @@ if os.path.exists(passwordLocation):
     year = date.strftime('%Y')
     day = date.strftime('%d')
     month = date.strftime('%B')
-    today = generalPath+month+year+".txt"
+    today = generalPath+month+"_"+year+".txt"
+
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+###############################################################################################################################################################################################################
+    #CATCH UP
+
+    intDay = int(day)
+    todayFile = open(today,encoding="utf8",mode='r+')
+    todayFileContent = []
+    for k in todayFile:
+        todayFileContent.append(k)
+    todayFile.close()
+            
+    entryInputAppend = open(today,'a+')
+
+    #This will update the current month's log with unrecorded days in the event that you don't start on time. 
+    #Example if you start logging on June 05, 2022, this will create 4 entries in June 2022 with "Not Recorded." in them. 
+    if(len(todayFileContent)==0):
+        for i in range(1,intDay):
+            if(i<10):
+                entryInputAppend.write(month + " 0" + str(i) + ", " + year + "\nNot Recorded.\n")
+            else:
+                entryInputAppend.write(month + " " + str(i) + ", " + year + "\nNot Recorded.\n")
+    entryInputAppend.close()
+    #This will get the last logged day in an entry. 
+    #It's always going to be the second line from the bottom anyway
+    lastLoggedLine = todayFileContent[len(todayFileContent)-2]
+    lastLoggedDay = ""
+    commaMark = 0
+
+    for i in range(0,len(lastLoggedLine)):
+        if("," in lastLoggedLine[i]):
+            commaMark = i
+            break
+
+    firstDigit = lastLoggedLine[commaMark-2]
+    secondDigit = lastLoggedLine[commaMark-1]
+    lastLoggedDay = firstDigit + secondDigit
+
+    lastLoggedDayNum = int(lastLoggedDay)
+    entryInputAppend = open(today,'a+')
+    
+    for i in range(lastLoggedDayNum+1,int(day)):
+        if(i<10):
+            entryInputAppend.write(month+" 0"+str(i) + " "+year+"\nNot Recorded.\n")
+        else:
+            entryInputAppend.write(month+" "+str(i) + " "+year+"\nNot Recorded.\n")
+
+    entryInputAppend.close()
+
 
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
@@ -272,7 +324,7 @@ if os.path.exists(passwordLocation):
         year = date.strftime('%Y')
         day = date.strftime('%d')
         month = date.strftime('%B')
-        today = generalPath+month+year+".txt"
+        today = generalPath+month+"_"+year+".txt"
         todayLoggedState = False
 
         
@@ -320,7 +372,7 @@ if os.path.exists(passwordLocation):
                     print(Fore.LIGHTCYAN_EX)
                     entryInput = input()
                     entryInputAppend = open(today,'a+')
-                    entryInputAppend.write("\n"+ month + " " + day + ", " + year + "\n")
+                    entryInputAppend.write(month + " " + day + ", " + year + "\n")
                     entryInputAppend.write(entryInput)    
                     entryInputAppend.close()
                 else:
@@ -591,7 +643,7 @@ if os.path.exists(passwordLocation):
             for n in range(len(mergeList)):            
                 for o in range(len(mergeList[n])):
                     if ((day+',' in mergeList[n][o])and(month in mergeList[n][o])):
-                        print(Fore.LIGHTWHITE_EX)
+                        print(Fore.YELLOW)
                         print(mergeList[n][o]+"\n"+mergeList[n][o+1]+"\n")
 
             print(Fore.LIGHTBLUE_EX + "************************************************************************************************************************************************************************************************************************************************")
@@ -621,7 +673,7 @@ if os.path.exists(passwordLocation):
             for i in sortedDirectory:
                 if(i.suffix == ".txt"):
                     txtList.append(i)
-            print(Fore.LIGHTYELLOW_EX)
+            print(Fore.GREEN)
             print("1.) Single Search")
             print("2.) Multi Search")
             searchType = input("Enter which search method you want to use\t")
@@ -761,8 +813,12 @@ if os.path.exists(passwordLocation):
 
 
         elif modeSelect == '6':
+            txtList = []
             print("\n")
             monthOrder = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            for i in os.listdir(generalPath):
+                if i.endswith(".txt"):
+                    txtList.append(i)
 
             pastYear = []
             for i in txtList:
@@ -780,7 +836,7 @@ if os.path.exists(passwordLocation):
                     monthList.append(k)
 
 
-            monthListSplit.sort(key=lambda x: monthOrder.index(x.split('_')[0]))
+            monthListSplit.sort(key=lambda x: monthOrder.index(x.split('_')[0]))            
 
             for i in pastYear:
                 print(str(i))
@@ -813,8 +869,25 @@ if os.path.exists(passwordLocation):
                         count = 0
                         finalCount = 0
                         iterator=-1
-                    
             menu()
+                
         else:
             menu()
-       
+        
+
+
+
+
+
+                
+
+
+    
+
+
+    
+
+
+        
+    
+    
