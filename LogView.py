@@ -262,12 +262,12 @@ if os.path.exists(passwordLocation):
 
     #This will update the current month's log with unrecorded days in the event that you don't start on time. 
     #Example if you start logging on June 05, 2022, this will create 4 entries in June 2022 with "Not Recorded." in them. 
-    if(len(todayFileContent)==0):
+    if((len(todayFileContent))==0):
         for i in range(1,intDay):
             if(i<10):
-                entryInputAppend.write(month + " 0" + str(i) + ", " + year + "\nNot Recorded.\n")
+                entryInputAppend.write("\n"+month + " 0" + str(i) + ", " + year + "\nNot Recorded.")
             else:
-                entryInputAppend.write(month + " " + str(i) + ", " + year + "\nNot Recorded.\n")
+                entryInputAppend.write("\n"+month + " " + str(i) + ", " + year + "\nNot Recorded.")
     entryInputAppend.close()
     #This will get the last logged day in an entry. 
     #It's always going to be the second line from the bottom anyway
@@ -285,15 +285,17 @@ if os.path.exists(passwordLocation):
     lastLoggedDay = firstDigit + secondDigit
 
     lastLoggedDayNum = int(lastLoggedDay)
-    entryInputAppend = open(today,'a+')
-    
-    for i in range(lastLoggedDayNum+1,int(day)):
-        if(i<10):
-            entryInputAppend.write(month+" 0"+str(i) + " "+year+"\nNot Recorded.\n")
-        else:
-            entryInputAppend.write(month+" "+str(i) + " "+year+"\nNot Recorded.\n")
 
-    entryInputAppend.close()
+    if(int(day)-1 !=lastLoggedDayNum):
+        entryInputAppend = open(today,'a+')
+    
+        for i in range(lastLoggedDayNum+1,int(day)):
+            if(i<10):
+                entryInputAppend.write("\n"+month+" 0"+str(i) + ", "+year+"\nNot Recorded.")
+            else:
+                entryInputAppend.write("\n"+month+" "+str(i) + ", "+year+"\nNot Recorded.")
+
+        entryInputAppend.close()
 
 
 ###############################################################################################################################################################################################################
@@ -465,7 +467,7 @@ if os.path.exists(passwordLocation):
                     print(Fore.LIGHTWHITE_EX)
                     desiredMonthInput = input()
                     for k in txtList:
-                        if ((desiredMonthInput in k)and((desiredMonthInput=="January")or(desiredMonthInput=="February")or(desiredMonthInput=="March")or(desiredMonthInput=="April")or(desiredMonthInput=="May")or(desiredMonthInput=="June")or(desiredMonthInput=="July")or(desiredMonthInput=="August")or(desiredMonthInput=="September")or(desiredMonthInput=="October")or(desiredMonthInput=="November")or(desiredMonthInput=="December"))and(desiredMonthInput+desiredYearInput in k)):
+                        if ((desiredMonthInput in k)and((desiredMonthInput=="January")or(desiredMonthInput=="February")or(desiredMonthInput=="March")or(desiredMonthInput=="April")or(desiredMonthInput=="May")or(desiredMonthInput=="June")or(desiredMonthInput=="July")or(desiredMonthInput=="August")or(desiredMonthInput=="September")or(desiredMonthInput=="October")or(desiredMonthInput=="November")or(desiredMonthInput=="December"))and(desiredMonthInput+"_"+desiredYearInput in k)):
                             validMonth = True
                             invalidMonth = False
                             break
@@ -516,7 +518,7 @@ if os.path.exists(passwordLocation):
 
 
                 #PRINTING THE DAY
-                pastFile = generalPath + desiredMonthInput + desiredYearInput + ".txt"
+                pastFile = generalPath + desiredMonthInput + "_" + desiredYearInput + ".txt"
                 pastFileRead = open(pastFile,encoding="utf8")
                 desiredLine = 0
                 pastFileContent = []
@@ -539,25 +541,38 @@ if os.path.exists(passwordLocation):
                     edit = input()
                     if(edit == 'y'):
                     
+                        def move_window(event):
+                            root.geometry('+{0}+{1}'.format(event.x_root, event.y_root))
 
                         root = Tk()
+                        root.overrideredirect(True)
                         ws = root.winfo_screenwidth()
                         hs = root.winfo_screenheight()
                         x = (ws/2) - (1000/2)
                         y = (hs/2) - (300/2)
                         root.geometry('%dx%d+%d+%d' % (1000, 300, x, y))
-                        root['bg']='#002233'
+                        root['bg']='#1e1e1e'
+                        title_bar = Frame(root, bg='#03dac5', relief='raised', bd=2,height=8)
+                        close_button = Button(title_bar, text='X', bg='red', command=root.destroy)
+                        window = Canvas(root, bg='#1e1e1e',)
+
 
                         def saveExit():
                             pastFileRead = open(pastFile,'r',encoding='utf-8')
-                            replaced_content = ""
-                            for line in pastFileRead:
-                                if pastFileContent[desiredLine + 1] in line:
-                                    new_line = line.replace(pastFileContent[desiredLine+1],editEntryBox.get(1.0,"end-1c")+"\n")
+                            pastFileReadLines = pastFileRead.readlines()
+                            replaced_content = ""     
+
+                            i=0
+
+                            for line in pastFileReadLines:
+                                
+                                if ((i==desiredLine+1)):
+                                   new_line = editEntryBox.get(1.0,"end-1c").strip()+"\n"
                                 else:
-                                    new_line = line
+                                   new_line = line
                             
                                 replaced_content = replaced_content + new_line
+                                i = i+1
                             
                             pastFileRead.close()
                             write_file = open(pastFile,'w',encoding='utf-8')
@@ -565,18 +580,22 @@ if os.path.exists(passwordLocation):
                             write_file.close()                    
                             root.destroy()
 
-                        editEntryBox = Text(root, height=7, width=104)                    
-                        label = Label(root, text = pastFileContent[desiredLine] + "\n")
+                        editEntryBox = Text(window, height=4, width=104,bg="#2e2e2e",fg="#FFFFFF")                    
+                        label = Label(window, text = pastFileContent[desiredLine],bg="#1e1e1e",fg='#FFFFFF')
                     
-                        label.config(font=("Courier",14),height = 2,anchor=N)
+                        label.config(font=("Courier",14,'bold'),height = 2)
 
                         editEntryBox.insert(END,pastFileContent[desiredLine+1])
-                        saveExitButton = tkinter.Button(root,text = "Save and Exit", command = saveExit)                        
-                    
+                        saveExitButton = tkinter.Button(root,text = "Save and Exit",bg="#03dac5", command = saveExit)                        
+                        label.place(x=90,y=30)
                         saveExitButton.place(x=450,y=240)
-                        #label.place(x=400,y=10,height=40)
-                        label.pack(anchor=S,pady=20)
+                        title_bar.pack(side=TOP, fill=X)
+                        close_button.pack(side=RIGHT)
                         editEntryBox.place(x=80,y=80)
+                        window.pack(expand=1, fill=BOTH)
+
+                        title_bar.bind('<B1-Motion>', move_window)
+                        root.attributes('-topmost',1)
 
                         root.mainloop()
                     ##############################################                    
@@ -873,21 +892,4 @@ if os.path.exists(passwordLocation):
                 
         else:
             menu()
-        
-
-
-
-
-
-                
-
-
-    
-
-
-    
-
-
-        
-    
-    
+     
