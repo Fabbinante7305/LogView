@@ -250,6 +250,11 @@ if os.path.exists(passwordLocation):
 ###############################################################################################################################################################################################################
 ###############################################################################################################################################################################################################
     #CATCH UP
+    from pathlib import Path
+    chk_file = Path(today)
+    if (chk_file.is_file()==False):
+        file = open(today, "w")
+        file.close()
 
     intDay = int(day)
     todayFile = open(today,encoding="utf8",mode='r+')
@@ -262,40 +267,40 @@ if os.path.exists(passwordLocation):
 
     #This will update the current month's log with unrecorded days in the event that you don't start on time. 
     #Example if you start logging on June 05, 2022, this will create 4 entries in June 2022 with "Not Recorded." in them. 
-    if((len(todayFileContent))==0):
+    if(((len(todayFileContent))==0)and(intDay>1)):
         for i in range(1,intDay):
             if(i<10):
                 entryInputAppend.write("\n"+month + " 0" + str(i) + ", " + year + "\nNot Recorded.")
             else:
                 entryInputAppend.write("\n"+month + " " + str(i) + ", " + year + "\nNot Recorded.")
-    entryInputAppend.close()
+        entryInputAppend.close()
     #This will get the last logged day in an entry. 
     #It's always going to be the second line from the bottom anyway
-    lastLoggedLine = todayFileContent[len(todayFileContent)-2]
-    lastLoggedDay = ""
-    commaMark = 0
+        lastLoggedLine = todayFileContent[len(todayFileContent)-2]
+        lastLoggedDay = ""
+        commaMark = 0
 
-    for i in range(0,len(lastLoggedLine)):
-        if("," in lastLoggedLine[i]):
-            commaMark = i
-            break
+        for i in range(0,len(lastLoggedLine)):
+            if("," in lastLoggedLine[i]):
+                commaMark = i
+                break
 
-    firstDigit = lastLoggedLine[commaMark-2]
-    secondDigit = lastLoggedLine[commaMark-1]
-    lastLoggedDay = firstDigit + secondDigit
+        firstDigit = lastLoggedLine[commaMark-2]
+        secondDigit = lastLoggedLine[commaMark-1]
+        lastLoggedDay = firstDigit + secondDigit
 
-    lastLoggedDayNum = int(lastLoggedDay)
+        lastLoggedDayNum = int(lastLoggedDay)
 
-    if(int(day)-1 !=lastLoggedDayNum):
-        entryInputAppend = open(today,'a+')
+        if(int(day)-1 !=lastLoggedDayNum):
+            entryInputAppend = open(today,'a+')
     
-        for i in range(lastLoggedDayNum+1,int(day)):
-            if(i<10):
-                entryInputAppend.write("\n"+month+" 0"+str(i) + ", "+year+"\nNot Recorded.")
-            else:
-                entryInputAppend.write("\n"+month+" "+str(i) + ", "+year+"\nNot Recorded.")
+            for i in range(lastLoggedDayNum+1,int(day)):
+                if(i<10):
+                    entryInputAppend.write("\n"+month+" 0"+str(i) + ", "+year+"\nNot Recorded.")
+                else:
+                    entryInputAppend.write("\n"+month+" "+str(i) + ", "+year+"\nNot Recorded.")
 
-        entryInputAppend.close()
+            entryInputAppend.close()
 
 
 ###############################################################################################################################################################################################################
@@ -560,7 +565,8 @@ if os.path.exists(passwordLocation):
                         def saveExit():
                             pastFileRead = open(pastFile,'r',encoding='utf-8')
                             pastFileReadLines = pastFileRead.readlines()
-                            replaced_content = ""     
+                            replaced_content = ""
+
 
                             i=0
 
@@ -892,4 +898,4 @@ if os.path.exists(passwordLocation):
                 
         else:
             menu()
-     
+        
