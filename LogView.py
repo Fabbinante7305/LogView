@@ -1,20 +1,18 @@
 
 from datetime import datetime
+import cmd
 import os
 from colorama import Fore, Back, Style
 from tkinter import *
 import tkinter
 import colorama
-from sumy.parsers.plaintext import PlaintextParser
-from nltk.tokenize import sent_tokenize
-from sumy.nlp.tokenizers import Tokenizer
-from sumy.summarizers.lsa import LsaSummarizer
-import nltk
 from pathlib import Path
 from fpdf import FPDF
 import re
 import sys
 import subprocess
+import json
+import glob
 
 colorama.init()
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk)) 
@@ -39,7 +37,6 @@ desiredDay = ""
 desiredMonth = ""
 desiredYear = ""
 modeSelect = ""
-nltk.download('punkt')
 
 
 def birthdayMenu():
@@ -251,6 +248,66 @@ def searchMenu():
 
 
 
+
+
+
+
+
+
+class Commands(cmd.Cmd):
+
+    generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
+    json_file_list = glob.glob(generalPath+"*.json")
+
+    date = datetime.now()
+    year = date.strftime('%Y')
+    day = date.strftime('%d')
+    month = date.strftime('%B')
+    monthNum = date.month
+    today = generalPath + month + "_" + year + ".txt"
+    desiredDay = ""
+    desiredMonth = ""
+    desiredYear = ""
+    modeSelect = ""
+
+
+
+    def do_history(self,line):
+        current_month_file_history = []
+        for i in self.json_file_list:
+            if ((i.__contains__(self.month))and not(i.__contains__(self.year))):
+                current_month_file_history.append(i)
+        
+        for i in current_month_file_history:
+            get_year_from_name = i.split("_")
+            get_year_from_name = get_year_from_name[1].split(".")
+            get_year_from_name = str(get_year_from_name[0])
+            print(get_year_from_name + "\n")
+            f = open(i,"r",encoding="utf-8")
+            content = json.load(f)
+            f.close()
+            print(content[self.day]+"\n")
+
+
+    def help_history(self):
+        print("\n\nPrints out the events that occured on today's date but in past years.\n\nEx.)It is June 01, 2023\n\nYou run >> history\n\nYou will see the logs of the first of June for 2022, 2021, 2020, etc.\help n")
+
+    def do_quit(self,line):
+        sys.exit()
+
+    def help_quit(self):
+        print("\nExit program\n")
+
+    def do_exit(self,line):
+        sys.exit()
+
+    def help_exit(self):
+        print("\nExit program")
+""" 
+
+
+
+
 modeSelect = ""
 #mainMenu differs from menu becuase this is the very firt menu that performs the birthday check
 def startup():
@@ -362,9 +419,6 @@ def startup():
         #If it finfds a match for a birthday on the current day of the current month and only finds the first name, it will print the first name
         if((i_split[2] == closestMonthStr)and(i_split[3]==closestDay)and(i_split[1]=='X')):
                 prPurple("\n Upcoming Birthday...\n "+i_split[0]+ " " + closestMonthStr+ " " + closestDay)
-
-
-
 
 
 def ONE():
@@ -688,6 +742,13 @@ def TWO():
 
 def THREE():
 
+    print()
+
+
+    
+
+
+    
 	modeSelect_past = ""
 	pastMenu()
 	global month
@@ -696,6 +757,7 @@ def THREE():
 	pastMonthList = []
 	mergeList = []
 	output = ""
+    
     
 	for i in os.listdir(generalPath):
 		if i.endswith(".txt"):
@@ -755,6 +817,9 @@ def THREE():
 			print("\nYou are in the HISTORY menu\nValid Commands:\n\n[clear , menu/back , pdf]")
 		else:
 			print("\nInvalid Command\nType 'help' for valid commands")
+               
+
+        
 
 
 
@@ -1139,7 +1204,7 @@ def SIX():
 def menu():
     os.system('cls')
     print(Fore.LIGHTBLUE_EX)
-    print(r"""
+    print(r
 
                               __
                             .d$$b
@@ -1167,7 +1232,7 @@ def menu():
                             ;`-
                            :\
                            ; 
-    """)
+    )
     flag = True
     while(flag):
 	    global modeSelect
@@ -1204,8 +1269,8 @@ def menu():
 	    	print("\nInvalid Command\nType 'help' for valid commands")
 
 
-
+"""
 
 
 if __name__ == "__main__":
-	menu()
+	Commands().cmdloop()
