@@ -6,6 +6,8 @@ from colorama import Fore, Back, Style
 from tkinter import *
 import tkinter
 import colorama
+from playsound import playsound
+import multiprocessing
 from pathlib import Path
 from fpdf import FPDF
 import re
@@ -13,6 +15,7 @@ import sys
 import subprocess
 import json
 import glob
+import atexit
 
 colorama.init()
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk)) 
@@ -255,7 +258,6 @@ def searchMenu():
 
 
 class Commands(cmd.Cmd):
-
     generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
     json_file_list = glob.glob(generalPath+"*.json")
     valid_months_list = ["January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September" , "October" , "November" , "December"]
@@ -269,10 +271,33 @@ class Commands(cmd.Cmd):
     desiredMonth = ""
     desiredYear = ""
     modeSelect = ""
+    todays_file = generalPath + month + "_" + year + ".json"
+
+
+
+
+    def check_today_logged(self):
+        f = open(self.todays_file,"r",encoding="utf-8")
+        content = json.load(f)
+        f.close()
+        if(day in content):
+            return True
+        else:
+            return False
+        
 
 
 
     def do_journal(self,line):
+        if(os.path.exists(self.todays_file)):
+            if(self.check_today_logged()):
+                pass
+            else:
+                log = input("Log your day.")
+
+
+
+            
 
     def help_journal(self):
         print("\nJournal today's log entry\n")
@@ -1286,6 +1311,19 @@ def menu():
 
 """
 
+class sound():
+    p = multiprocessing.Process(target=playsound, args=("LoFi.mp3",))
+    @staticmethod
+    def __init__():
+        sound.p.start()
+    @staticmethod
+    def close():
+        sound.p.terminate()
+        
+
+
 
 if __name__ == "__main__":
-	Commands().cmdloop()
+    sound()
+    atexit.register(sound.close)
+    Commands().cmdloop()
