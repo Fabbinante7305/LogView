@@ -258,7 +258,7 @@ class Commands(cmd.Cmd):
 
     generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
     json_file_list = glob.glob(generalPath+"*.json")
-
+    valid_months_list = ["January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September" , "October" , "November" , "December"]
     date = datetime.now()
     year = date.strftime('%Y')
     day = date.strftime('%d')
@@ -269,6 +269,15 @@ class Commands(cmd.Cmd):
     desiredMonth = ""
     desiredYear = ""
     modeSelect = ""
+
+
+
+    def do_journal(self,line):
+
+    def help_journal(self):
+        print("\nJournal today's log entry\n")
+
+
 
 
 
@@ -302,7 +311,13 @@ class Commands(cmd.Cmd):
         sys.exit()
 
     def help_exit(self):
-        print("\nExit program")
+        print("\nExit program\n")
+
+    def do_clear(self,line):
+        os.system('cls')
+
+    def help_clear(self):
+        print("\nClears the console\n")
 """ 
 
 
