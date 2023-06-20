@@ -273,9 +273,6 @@ class Commands(cmd.Cmd):
     modeSelect = ""
     todays_file = generalPath + month + "_" + year + ".json"
 
-
-
-
     def check_today_logged(self):
         f = open(self.todays_file,"r",encoding="utf-8")
         content = json.load(f)
@@ -284,25 +281,48 @@ class Commands(cmd.Cmd):
             return True
         else:
             return False
-        
-
-
 
     def do_journal(self,line):
+        dictionary = {}
         if(os.path.exists(self.todays_file)):
             if(self.check_today_logged()):
-                pass
+                print("\nYou've already logged today but feel free to log again\n")
+                print("BEFORE")
+                f = open(self.todays_file,"r",encoding="utf-8")
+                content = json.load(f)
+                print(content[str(self.day)])
+                print("\n\n")
+                f.close()
+
+                log = input("\nLog your day\n")
+                dictionary[str(day)] = log
+                
+                f = open(self.todays_file,"r",encoding="utf-8")
+                content = json.loads(f.read())
+                f.close()
+                content.update(dictionary)
+
+                f = open(self.todays_file,"w")
+                f.write(json.dumps(content))
+                f.close()
+
             else:
-                log = input("Log your day.")
+                log = input("\nLog your day\n")
+                dictionary[str(day)] = log
+                
+                f = open(self.todays_file,"r",encoding="utf-8")
+                content = json.loads(f.read())
+                f.close()
+                content.update(dictionary)
 
-
+                f = open(self.todays_file,"w")
+                f.write(json.dumps(content))
+                f.close()
 
             
 
     def help_journal(self):
         print("\nJournal today's log entry\n")
-
-
 
 
 
