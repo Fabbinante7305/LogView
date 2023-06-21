@@ -273,6 +273,43 @@ class Commands(cmd.Cmd):
     modeSelect = ""
     todays_file = generalPath + month + "_" + year + ".json"
 
+
+    def non_logged_fill(self):
+        f = open(self.todays_file,"r",encoding="utf-8")
+        content = json.load(f)
+        f.close()
+        dictionary = {}
+        content_int_list = []
+        for k in content.keys():
+            content_int_list.append(int(k))
+        print(content.keys())
+
+        print(len(content.keys()))
+        print(int(self.day))
+        if(len(content.keys()) != (int(self.day) - 1)):
+
+            for j in range(1,int(self.day)):
+                if j not in content_int_list:
+                    dictionary[str(j)] = "Not Recorded."
+
+                    f = open(self.todays_file,"r",encoding="utf-8")
+                    content = json.loads(f.read())
+                    f.close()
+                    content.update(dictionary)
+
+                    f = open(self.todays_file,"w")
+                    f.write(json.dumps(content))
+                    f.close()
+        else:
+            print("all good")
+
+
+
+
+
+    def do_test(self,line):
+        self.non_logged_fill()
+
     def check_today_logged(self):
         f = open(self.todays_file,"r",encoding="utf-8")
         content = json.load(f)
