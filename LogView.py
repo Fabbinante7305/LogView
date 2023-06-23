@@ -297,6 +297,24 @@ class Commands(cmd.Cmd):
             return True
         else:
             return False
+        
+    def do_get(self,line):
+        line_split = line.split(" ")
+        if(len(line_split)!=3):
+            print("\nYou most likely don't have things in the right format.\n")
+            print("\nType '>> help get' for more info\n")
+        else:
+            if line_split[0] not in 
+            elif((line_split[1].isnumeric() == False)or(line_split[2].isnumeric() == False)):
+                print("\nIncorrect formatting. 'Day' field and 'Year' field must be numeric\n")
+                print("\nType '>> help get' for more info\n")
+
+
+        
+    def help_get(self):
+        print("\nGets the log entry for the date you specify\n")
+        print("\nFORMATS: June 05 2022\n")
+        
 
     def do_journal(self,line):
         dictionary = {}
@@ -339,7 +357,6 @@ class Commands(cmd.Cmd):
 
     def help_journal(self):
         print("\nJournal today's log entry\n")
-
 
 
     def do_history(self,line):
