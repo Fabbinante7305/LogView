@@ -304,7 +304,9 @@ class Commands(cmd.Cmd):
             print("\nYou most likely don't have things in the right format.\n")
             print("\nType '>> help get' for more info\n")
         else:
-            if line_split[0] not in 
+            if(line_split[0] not in self.valid_months_list):
+                print("\nIncorrect Formatting. You must specify a VALID month\n")
+
             elif((line_split[1].isnumeric() == False)or(line_split[2].isnumeric() == False)):
                 print("\nIncorrect formatting. 'Day' field and 'Year' field must be numeric\n")
                 print("\nType '>> help get' for more info\n")
