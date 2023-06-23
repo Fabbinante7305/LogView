@@ -248,15 +248,6 @@ def searchMenu():
 \/_/""")
 
 
-
-
-
-
-
-
-
-
-
 class Commands(cmd.Cmd):
     generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
     json_file_list = glob.glob(generalPath+"*.json")
@@ -272,6 +263,31 @@ class Commands(cmd.Cmd):
     desiredYear = ""
     modeSelect = ""
     todays_file = generalPath + month + "_" + year + ".json"
+
+    def __init__(self):
+        super(Commands,self).__init__()
+        f = open(self.todays_file,"r",encoding="utf-8")
+        content = json.load(f)
+        f.close()
+        dictionary = {}
+        content_int_list = []
+        for k in content.keys():
+            content_int_list.append(int(k))
+
+        if(len(content.keys()) != (int(self.day) - 1)):
+
+            for j in range(1,int(self.day)):
+                if j not in content_int_list:
+                    dictionary[str(j)] = "Not Recorded."
+
+                    f = open(self.todays_file,"r",encoding="utf-8")
+                    content = json.loads(f.read())
+                    f.close()
+                    content.update(dictionary)
+
+                    f = open(self.todays_file,"w")
+                    f.write(json.dumps(content))
+                    f.close()
 
     def check_today_logged(self):
         f = open(self.todays_file,"r",encoding="utf-8")
