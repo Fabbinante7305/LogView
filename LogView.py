@@ -311,6 +311,19 @@ class Commands(cmd.Cmd):
                 print("\nIncorrect formatting. 'Day' field and 'Year' field must be numeric\n")
                 print("\nType '>> help get' for more info\n")
 
+        desired_month = line_split[0]
+        desired_day   = line_split[1]
+        desired_year  = line_split[2]
+        if os.path.exists(self.generalPath + desired_month + "_" + desired_year + ".json"):
+            f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
+            content = json.load(f)
+            if(desired_day in content.keys()):
+                print(content[desired_day])
+        else:
+            print("You do not have a file for the month of " + desired_month + " in the year " + desired_year)
+
+
+
 
         
     def help_get(self):
