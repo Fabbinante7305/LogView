@@ -248,7 +248,12 @@ def searchMenu():
 \/_/""")
 
 
+
+
+
 class Commands(cmd.Cmd):
+
+    prompt = "(LOG) >> "
     generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
     json_file_list = glob.glob(generalPath+"*.json")
     valid_months_list = ["January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September" , "October" , "November" , "December"]
@@ -265,6 +270,38 @@ class Commands(cmd.Cmd):
     todays_file = generalPath + month + "_" + year + ".json"
 
     def __init__(self):
+        os.system('cls')
+        print(Fore.LIGHTBLUE_EX)
+        print(r"""
+
+                              __
+                            .d$$b
+                          .' TO$;\
+                         /  : TP._;                
+                        / _.;  :Tb|                
+                       /   /   ;j$j                
+                   _.-"       d$$$$                  Welcome Francesco
+                 .' ..       d$$$$;                
+                /  /P'      d$$$$P. |\             
+               /   "      .d$$$P' |\^"l
+             .'           `T$P^'''''  :
+         ._.'      _.'                ;
+      `-.-".-'-' ._.       _.-"    .-"
+    `.-" _____  ._              .-"
+   -(.g$$$$$$$b.              .'
+     ""^^T$$$P^)            .(:
+       _/  -"  /.'         /:/;
+    ._.'-'`-'  ")/         /;/;
+ `-.-"..--""   " /         /  ;
+.-" ..--""        -'          :
+..--""--.-"         (\      .-(\
+  ..--""              `-\(\/;`
+    _.                      :
+                            ;`-
+                           :\
+                           ; 
+    """)
+        print(Fore.LIGHTWHITE_EX)
         super(Commands,self).__init__()
         f = open(self.todays_file,"r",encoding="utf-8")
         content = json.load(f)
@@ -297,6 +334,41 @@ class Commands(cmd.Cmd):
             return True
         else:
             return False
+        
+    def do_get(self,line):
+        line_split = line.split(" ")
+        if(len(line_split)!=3):
+            prRed("\nINCORRECT FORMATTING: 'get' takes exactly 3 parameters.\nSee help for more details\n")
+        else:
+            if(line_split[0] not in self.valid_months_list):
+                prRed("\nINCORRECT FORMATTING: The month you provided was not valid\n")
+
+            elif((line_split[1].isnumeric() == False)or(line_split[2].isnumeric() == False)):
+                prRed("\nINCORRECT FORMATTING: The [Day] and [Month] fields must be numeric\n")
+
+            else:
+
+                desired_month = line_split[0]
+                desired_day   = line_split[1]
+                desired_year  = line_split[2]
+                if os.path.exists(self.generalPath + desired_month + "_" + desired_year + ".json"):
+                    f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
+                    content = json.load(f)
+                    if(desired_day in content.keys()):
+                        print("\n"+content[desired_day] +"\n")
+                    else:
+                        prRed("\nINVALID DAY\n")
+                else:
+                    prRed("\nYou do not have a file for the month of " + desired_month + " in the year " + desired_year+"\n")
+
+
+
+
+        
+    def help_get(self):
+        prYellow("\nGets the log entry attributed to the [Month] [Day] [Year] that you specify")
+        prYellow("\nEx.) (LOG) >> get June 05 2023\n")
+        
 
     def do_journal(self,line):
         dictionary = {}
@@ -335,14 +407,12 @@ class Commands(cmd.Cmd):
                 f.write(json.dumps(content))
                 f.close()
 
-            
 
     def help_journal(self):
-        print("\nJournal today's log entry\n")
-
-
+        prYellow("\nLog today's entry\n")
 
     def do_history(self,line):
+        print("\n")
         current_month_file_history = []
         for i in self.json_file_list:
             if ((i.__contains__(self.month))and not(i.__contains__(self.year))):
@@ -352,33 +422,33 @@ class Commands(cmd.Cmd):
             get_year_from_name = i.split("_")
             get_year_from_name = get_year_from_name[1].split(".")
             get_year_from_name = str(get_year_from_name[0])
-            print(get_year_from_name + "\n")
+            prPurple(get_year_from_name + "\n")
             f = open(i,"r",encoding="utf-8")
             content = json.load(f)
             f.close()
-            print(content[self.day]+"\n")
+            print("  *\t"+content[self.day]+"\n")
 
 
     def help_history(self):
-        print("\n\nPrints out the events that occured on today's date but in past years.\n\nEx.)It is June 01, 2023\n\nYou run >> history\n\nYou will see the logs of the first of June for 2022, 2021, 2020, etc.\help n")
+        prYellow("\n\nPrints out the events that occured on today's date but in past years.\n\nEx.)It is June 01, 2023\n\nYou run >> history\n\nYou will see the logs of the first of June for 2022, 2021, 2020, etc.\help n")
 
     def do_quit(self,line):
         sys.exit()
 
     def help_quit(self):
-        print("\nExit program\n")
+        prYellow("\nExit program\n")
 
     def do_exit(self,line):
         sys.exit()
 
     def help_exit(self):
-        print("\nExit program\n")
+        prYellow("\nExit program\n")
 
     def do_clear(self,line):
         os.system('cls')
 
     def help_clear(self):
-        print("\nClears the console\n")
+        prYellow("\nClears the console\n")
 """ 
 
 
