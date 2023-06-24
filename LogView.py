@@ -248,6 +248,9 @@ def searchMenu():
 \/_/""")
 
 
+
+
+
 class Commands(cmd.Cmd):
 
     prompt = "(LOG) >> "
@@ -267,6 +270,38 @@ class Commands(cmd.Cmd):
     todays_file = generalPath + month + "_" + year + ".json"
 
     def __init__(self):
+        os.system('cls')
+        print(Fore.LIGHTBLUE_EX)
+        print(r"""
+
+                              __
+                            .d$$b
+                          .' TO$;\
+                         /  : TP._;                
+                        / _.;  :Tb|                
+                       /   /   ;j$j                
+                   _.-"       d$$$$                  Welcome Francesco
+                 .' ..       d$$$$;                
+                /  /P'      d$$$$P. |\             
+               /   "      .d$$$P' |\^"l
+             .'           `T$P^'''''  :
+         ._.'      _.'                ;
+      `-.-".-'-' ._.       _.-"    .-"
+    `.-" _____  ._              .-"
+   -(.g$$$$$$$b.              .'
+     ""^^T$$$P^)            .(:
+       _/  -"  /.'         /:/;
+    ._.'-'`-'  ")/         /;/;
+ `-.-"..--""   " /         /  ;
+.-" ..--""        -'          :
+..--""--.-"         (\      .-(\
+  ..--""              `-\(\/;`
+    _.                      :
+                            ;`-
+                           :\
+                           ; 
+    """)
+        print(Fore.LIGHTWHITE_EX)
         super(Commands,self).__init__()
         f = open(self.todays_file,"r",encoding="utf-8")
         content = json.load(f)
@@ -372,13 +407,12 @@ class Commands(cmd.Cmd):
                 f.write(json.dumps(content))
                 f.close()
 
-            
 
     def help_journal(self):
         prYellow("\nLog today's entry\n")
 
-
     def do_history(self,line):
+        print("\n")
         current_month_file_history = []
         for i in self.json_file_list:
             if ((i.__contains__(self.month))and not(i.__contains__(self.year))):
@@ -388,11 +422,11 @@ class Commands(cmd.Cmd):
             get_year_from_name = i.split("_")
             get_year_from_name = get_year_from_name[1].split(".")
             get_year_from_name = str(get_year_from_name[0])
-            print(get_year_from_name + "\n")
+            prPurple(get_year_from_name + "\n")
             f = open(i,"r",encoding="utf-8")
             content = json.load(f)
             f.close()
-            print(content[self.day]+"\n")
+            print("  *\t"+content[self.day]+"\n")
 
 
     def help_history(self):
