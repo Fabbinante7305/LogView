@@ -205,7 +205,7 @@ class Commands(cmd.Cmd):
 
 
     def help_history(self):
-        prYellow("\n\nPrints out the events that occured on today's date but in past years.\n\nEx.)It is June 01, 2023\n\nYou run >> history\n\nYou will see the logs of the first of June for 2022, 2021, 2020, etc.\help n")
+        prYellow("\n\nPrints out the events that occured on today's date but in past years.\n\nScenario: It is June 01, 2023 currently and you run \n(LOG) >> history\n\nYou will see the logs of June 01, 2022 & June 01, 2021, & so on\n")
 
     def do_quit(self,line):
         sys.exit()
