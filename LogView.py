@@ -249,6 +249,8 @@ def searchMenu():
 
 
 class Commands(cmd.Cmd):
+
+    prompt = "(LOG) >> "
     generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
     json_file_list = glob.glob(generalPath+"*.json")
     valid_months_list = ["January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September" , "October" , "November" , "December"]
@@ -301,34 +303,36 @@ class Commands(cmd.Cmd):
     def do_get(self,line):
         line_split = line.split(" ")
         if(len(line_split)!=3):
-            print("\nYou most likely don't have things in the right format.\n")
-            print("\nType '>> help get' for more info\n")
+            prRed("\nINCORRECT FORMATTING: 'get' takes exactly 3 parameters.\nSee help for more details\n")
         else:
             if(line_split[0] not in self.valid_months_list):
-                print("\nIncorrect Formatting. You must specify a VALID month\n")
+                prRed("\nINCORRECT FORMATTING: The month you provided was not valid\n")
 
             elif((line_split[1].isnumeric() == False)or(line_split[2].isnumeric() == False)):
-                print("\nIncorrect formatting. 'Day' field and 'Year' field must be numeric\n")
-                print("\nType '>> help get' for more info\n")
+                prRed("\nINCORRECT FORMATTING: The [Day] and [Month] fields must be numeric\n")
 
-        desired_month = line_split[0]
-        desired_day   = line_split[1]
-        desired_year  = line_split[2]
-        if os.path.exists(self.generalPath + desired_month + "_" + desired_year + ".json"):
-            f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
-            content = json.load(f)
-            if(desired_day in content.keys()):
-                print(content[desired_day])
-        else:
-            print("You do not have a file for the month of " + desired_month + " in the year " + desired_year)
+            else:
+
+                desired_month = line_split[0]
+                desired_day   = line_split[1]
+                desired_year  = line_split[2]
+                if os.path.exists(self.generalPath + desired_month + "_" + desired_year + ".json"):
+                    f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
+                    content = json.load(f)
+                    if(desired_day in content.keys()):
+                        print("\n"+content[desired_day] +"\n")
+                    else:
+                        prRed("\nINVALID DAY\n")
+                else:
+                    prRed("\nYou do not have a file for the month of " + desired_month + " in the year " + desired_year+"\n")
 
 
 
 
         
     def help_get(self):
-        print("\nGets the log entry for the date you specify\n")
-        print("\nFORMATS: June 05 2022\n")
+        prYellow("\nGets the log entry attributed to the [Month] [Day] [Year] that you specify")
+        prYellow("\nEx.) (LOG) >> get June 05 2023\n")
         
 
     def do_journal(self,line):
@@ -371,7 +375,7 @@ class Commands(cmd.Cmd):
             
 
     def help_journal(self):
-        print("\nJournal today's log entry\n")
+        prYellow("\nLog today's entry\n")
 
 
     def do_history(self,line):
@@ -392,25 +396,25 @@ class Commands(cmd.Cmd):
 
 
     def help_history(self):
-        print("\n\nPrints out the events that occured on today's date but in past years.\n\nEx.)It is June 01, 2023\n\nYou run >> history\n\nYou will see the logs of the first of June for 2022, 2021, 2020, etc.\help n")
+        prYellow("\n\nPrints out the events that occured on today's date but in past years.\n\nEx.)It is June 01, 2023\n\nYou run >> history\n\nYou will see the logs of the first of June for 2022, 2021, 2020, etc.\help n")
 
     def do_quit(self,line):
         sys.exit()
 
     def help_quit(self):
-        print("\nExit program\n")
+        prYellow("\nExit program\n")
 
     def do_exit(self,line):
         sys.exit()
 
     def help_exit(self):
-        print("\nExit program\n")
+        prYellow("\nExit program\n")
 
     def do_clear(self,line):
         os.system('cls')
 
     def help_clear(self):
-        print("\nClears the console\n")
+        prYellow("\nClears the console\n")
 """ 
 
 
