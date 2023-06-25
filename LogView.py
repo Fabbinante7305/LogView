@@ -158,7 +158,7 @@ class Commands(cmd.Cmd):
                 f.close()
 
                 log = input("\nLog your day\n")
-                dictionary[str(day)] = log
+                dictionary[str(self.day)] = log
                 
                 f = open(self.todays_file,"r",encoding="utf-8")
                 content = json.loads(f.read())
@@ -171,7 +171,7 @@ class Commands(cmd.Cmd):
 
             else:
                 log = input("\nLog your day\n")
-                dictionary[str(day)] = log
+                dictionary[str(self.day)] = log
                 
                 f = open(self.todays_file,"r",encoding="utf-8")
                 content = json.loads(f.read())
