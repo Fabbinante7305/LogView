@@ -46,6 +46,7 @@ class Commands(cmd.Cmd):
     desiredYear = ""
     modeSelect = ""
     todays_file = generalPath + month + "_" + year + ".json"
+    
 
     def __init__(self):
         os.system('cls')
@@ -81,9 +82,22 @@ class Commands(cmd.Cmd):
     """)
         print(Fore.LIGHTWHITE_EX)
         super(Commands,self).__init__()
-        f = open(self.todays_file,"r",encoding="utf-8")
-        content = json.load(f)
-        f.close()
+        empty_dictionary = {}
+        content = {}
+        if(os.path.exists(self.todays_file)):
+            f = open(self.todays_file,"r",encoding="utf-8")
+            content = json.load(f)
+            f.close()
+        else:
+            for i in range(1,int(self.day)-1):
+                empty_dictionary[str(i)] = "Not Recorded."
+            f = open(self.todays_file,"w",encoding="utf-8")
+            json.dump(empty_dictionary,f)
+            f.close()
+            
+            f = open(self.todays_file,"r",encoding="utf-8")
+            content = json.load(f)
+            f.close()
         dictionary = {}
         content_int_list = []
         for k in content.keys():
