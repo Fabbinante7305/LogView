@@ -6,13 +6,13 @@ from colorama import Fore, Back, Style
 from tkinter import *
 import tkinter
 import colorama
+from alive_progress import alive_bar
 from playsound import playsound
 import multiprocessing
 from pathlib import Path
 from fpdf import FPDF
-import re
 import sys
-import subprocess
+import time
 import json
 import glob
 import atexit
@@ -84,10 +84,38 @@ class Commands(cmd.Cmd):
         super(Commands,self).__init__()
         empty_dictionary = {}
         content = {}
+        #COMMENT: If you've been logging in the current month, you obviously already have the json file for the month created so just take the contents of the file and if there are any days we've missed since last log, we account for that here too
         if(os.path.exists(self.todays_file)):
             f = open(self.todays_file,"r",encoding="utf-8")
             content = json.load(f)
             f.close()
+
+            dictionary = {}
+            content_int_list = []
+            for k in content.keys():
+                content_int_list.append(int(k))
+
+            if(len(content.keys()) != (int(self.day) - 1)):
+                for j in range(1,int(self.day)):
+                    if j not in content_int_list:
+                        dictionary[str(j)] = "Not Recorded."
+
+                        f = open(self.todays_file,"r",encoding="utf-8")
+                        content = json.loads(f.read())
+                        f.close()
+                        content.update(dictionary)
+                        f = open(self.todays_file,"w")
+                        f.write(json.dumps(content))
+                        f.close()
+
+        #COMMENT: This case is for when you start a new month and you start it on the first day of it as opposed to checking for days that you've missed in the new month                
+        elif(not(os.path.exists(self.todays_file)) and (int(self.day) == 1)):
+            f = open(self.todays_file,"w",encoding="utf-8")
+            print("The month's log file has been created.")
+            f.close()
+
+
+        #COMMENT: This case is for when you start a new month and a couple days have already passed so we update the json file to fill in "Not Recorded." for those days
         else:
             for i in range(1,int(self.day)-1):
                 empty_dictionary[str(i)] = "Not Recorded."
@@ -98,25 +126,14 @@ class Commands(cmd.Cmd):
             f = open(self.todays_file,"r",encoding="utf-8")
             content = json.load(f)
             f.close()
-        dictionary = {}
-        content_int_list = []
-        for k in content.keys():
-            content_int_list.append(int(k))
-
-        if(len(content.keys()) != (int(self.day) - 1)):
-
-            for j in range(1,int(self.day)):
-                if j not in content_int_list:
-                    dictionary[str(j)] = "Not Recorded."
-
-                    f = open(self.todays_file,"r",encoding="utf-8")
-                    content = json.loads(f.read())
-                    f.close()
-                    content.update(dictionary)
-
-                    f = open(self.todays_file,"w")
-                    f.write(json.dumps(content))
-                    f.close()
+            for total in range(1):
+                with alive_bar(total,bar="smooth") as bar:
+                    for _ in range(int(self.day)-1):
+                        time.sleep(.3)
+                        bar()
+            print("\nThe month's log file has been created")
+            print("You have "+ str(int(self.day)-1) + " days uncaccounted for and they have been stored in the log as 'Not Recorded.'\n")
+        
 
     def check_today_logged(self):
         f = open(self.todays_file,"r",encoding="utf-8")
