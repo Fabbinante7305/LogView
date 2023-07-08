@@ -84,6 +84,7 @@ class Commands(cmd.Cmd):
         super(Commands,self).__init__()
         empty_dictionary = {}
         content = {}
+
         #COMMENT: If you've been logging in the current month, you obviously already have the json file for the month created so just take the contents of the file and if there are any days we've missed since last log, we account for that here too
         if(os.path.exists(self.todays_file)):
             f = open(self.todays_file,"r",encoding="utf-8")
@@ -131,6 +132,7 @@ class Commands(cmd.Cmd):
                     for _ in range(int(self.day)-1):
                         time.sleep(.3)
                         bar()
+
             print("\nThe month's log file has been created")
             print("You have "+ str(int(self.day)-1) + " days uncaccounted for and they have been stored in the log as 'Not Recorded.'\n")
         
@@ -159,6 +161,8 @@ class Commands(cmd.Cmd):
 
                 desired_month = line_split[0]
                 desired_day   = line_split[1]
+                if (len(desired_day) != 2):
+                    desired_day = "0" + desired_day
                 desired_year  = line_split[2]
                 if os.path.exists(self.generalPath + desired_month + "_" + desired_year + ".json"):
                     f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
