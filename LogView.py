@@ -287,63 +287,62 @@ class Commands(cmd.Cmd):
                     f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
                     content = json.load(f)
                     if(desired_day in content.keys()):
-                        print("\n"+content[desired_day] +"\n")
+                        def move_window(event):
+                            root.geometry('+{0}+{1}'.format(event.x_root, event.y_root))
+
+                        root = Tk()
+                        root.overrideredirect(True)
+                        ws = root.winfo_screenwidth()
+                        hs = root.winfo_screenheight()
+                        x = (ws/2) - (1000/2)
+                        y = (hs/2) - (300/2)
+                        root.geometry('%dx%d+%d+%d' % (1000, 300, x, y))
+                        root['bg']='#1e1e1e'
+                        title_bar = Frame(root, bg='#03dac5', relief='raised', bd=2,height=8)
+                        close_button = Button(title_bar, text='X', bg='red', command=root.destroy)
+                        window = Canvas(root, bg='#1e1e1e',)
+
+
+                        def saveExit():
+                            dictionary = {}
+                            dictionary[desired_day] = editEntryBox.get(1.0,"end-1c").strip()
+                            f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
+                            content = json.loads(f.read())
+                            f.close()
+                            content.update(dictionary)
+
+                            f = open(self.generalPath+desired_month + "_"+desired_year+".json","w")
+                            f.write(json.dumps(content))
+                            f.close()
+        
+                            root.destroy() 
+                    
+
+                        editEntryBox = Text(window, height=4, width=104,bg="#2e2e2e",fg="#FFFFFF")                    
+                        label = Label(window, text = desired_month + " " + desired_day + " " + desired_year,bg="#1e1e1e",fg='#FFFFFF')
+            
+                        label.config(font=("Courier",14,'bold'),height = 2)
+
+                        editEntryBox.insert(END,content[desired_day])
+                        saveExitButton = tkinter.Button(root,text = "Save and Exit",bg="#03dac5", command = saveExit)                        
+                        label.place(x=90,y=30)
+                        saveExitButton.place(x=450,y=240)
+                        title_bar.pack(side=TOP, fill=X)
+                        close_button.pack(side=RIGHT)
+                        editEntryBox.place(x=80,y=80)
+                        window.pack(expand=1, fill=BOTH)
+
+                        title_bar.bind('<B1-Motion>', move_window)
+                        root.attributes('-topmost',1)
+
+                        root.mainloop()
                     else:
                         prRed("\nINVALID DAY\n")
                 else:
                     prRed("\nYou do not have a file for the month of " + desired_month + " in the year " + desired_year+"\n")
 
 
-                def move_window(event):
-                    root.geometry('+{0}+{1}'.format(event.x_root, event.y_root))
-
-                root = Tk()
-                root.overrideredirect(True)
-                ws = root.winfo_screenwidth()
-                hs = root.winfo_screenheight()
-                x = (ws/2) - (1000/2)
-                y = (hs/2) - (300/2)
-                root.geometry('%dx%d+%d+%d' % (1000, 300, x, y))
-                root['bg']='#1e1e1e'
-                title_bar = Frame(root, bg='#03dac5', relief='raised', bd=2,height=8)
-                close_button = Button(title_bar, text='X', bg='red', command=root.destroy)
-                window = Canvas(root, bg='#1e1e1e',)
-
-
-                def saveExit():
-                    dictionary = {}
-                    dictionary[desired_day] = editEntryBox.get(1.0,"end-1c").strip()
-                    f = open(self.generalPath+desired_month + "_"+desired_year+".json","r",encoding="utf-8")
-                    content = json.loads(f.read())
-                    f.close()
-                    content.update(dictionary)
-
-                    f = open(self.generalPath+desired_month + "_"+desired_year+".json","w")
-                    f.write(json.dumps(content))
-                    f.close()
-        
-                    root.destroy() 
-                    
-
-                editEntryBox = Text(window, height=4, width=104,bg="#2e2e2e",fg="#FFFFFF")                    
-                label = Label(window, text = desired_month + " " + desired_day + " " + desired_year,bg="#1e1e1e",fg='#FFFFFF')
-            
-                label.config(font=("Courier",14,'bold'),height = 2)
-
-                editEntryBox.insert(END,content[desired_day])
-                saveExitButton = tkinter.Button(root,text = "Save and Exit",bg="#03dac5", command = saveExit)                        
-                label.place(x=90,y=30)
-                saveExitButton.place(x=450,y=240)
-                title_bar.pack(side=TOP, fill=X)
-                close_button.pack(side=RIGHT)
-                editEntryBox.place(x=80,y=80)
-                window.pack(expand=1, fill=BOTH)
-
-                title_bar.bind('<B1-Motion>', move_window)
-                root.attributes('-topmost',1)
-
-                root.mainloop()
-
+                
 
     def help_history(self):
         prYellow("\nUsage: >> history")
