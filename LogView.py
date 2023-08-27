@@ -6,6 +6,7 @@ from colorama import Fore, Back, Style
 from tkinter import *
 import tkinter
 import colorama
+import threading
 from alive_progress import alive_bar
 from playsound import playsound
 import multiprocessing
@@ -38,6 +39,7 @@ class Commands(cmd.Cmd):
     prompt = "(LOG) >> "
     generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
     photos_path = r"C:\Users\ecoce\Pictures\BACKUP_PHOTOS\Photos\\"
+    movie_images_list = []
     json_file_list = glob.glob(generalPath+"*.json")
     valid_months_list = ["January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September" , "October" , "November" , "December"]
     birthday_commands = ["add", "edit", "list"]
@@ -287,21 +289,40 @@ class Commands(cmd.Cmd):
 
     def do_movie(self,line):
         list_of_images = self.traverse_recursively(self.photos_path)
-        movie_images_list = []
-        for i in list_of_images:
-            date_taken = (self.get_image_taken_date(i))
-            if(date_taken != None):
-                split1 = date_taken.split(" ")
-                split2 = split1[0].split(":")
-                image_taken_month = split2[1]
-                image_taken_day = split2[2]
-                if( (int(image_taken_month) == int(self.monthNum)) and (int(image_taken_day)==int(self.day)) ):
-                    movie_images_list.append(i)
-        print(len(movie_images_list))
-        if(len(movie_images_list)>0):
-            self.create_slideshow(movie_images_list,"output.mp4")
+
+        def prepare_movie():
+            for i in list_of_images:
+                date_taken = (self.get_image_taken_date(i))
+                if(date_taken != None):
+                    split1 = date_taken.split(" ")
+                    split2 = split1[0].split(":")
+                    image_taken_month = split2[1]
+                    image_taken_day = split2[2]
+            if( (int(image_taken_month) == int(self.monthNum)) and (int(image_taken_day)==int(self.day)) ):
+                self.movie_images_list.append(i)
+
+        def progress_bar():
+            print("\n")
+            for total in range(1):
+                with alive_bar(total,bar="smooth") as bar:
+                    for _ in range(len(list_of_images)-1):
+                        time.sleep(.001)
+                        bar()
+            print("\n")
+
+        t1 = threading.Thread(target=prepare_movie,args=())
+        t2 = threading.Thread(target=progress_bar,args=())
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
+        
+        
+        if(len(self.movie_images_list)>0):
+            self.create_slideshow(self.movie_images_list,"output.mp4")
+            print("Created slideshow!\n")
         else:
-            print("There were no images to create a movie")
+            print("No images were found for today's date. Could not create a slideshow.\n")
         
 
 
