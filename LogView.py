@@ -10,12 +10,16 @@ from alive_progress import alive_bar
 from playsound import playsound
 import multiprocessing
 from pathlib import Path
+from moviepy.editor import ImageSequenceClip
+from moviepy.editor import *
 from fpdf import FPDF
 import sys
 import time
 import json
 import glob
 import atexit
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 colorama.init()
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk)) 
@@ -33,6 +37,7 @@ class Commands(cmd.Cmd):
 
     prompt = "(LOG) >> "
     generalPath = r"C:\Users\ecoce\OneDrive\MyLog\\"
+    photos_path = r"C:\Users\ecoce\Pictures\BACKUP_PHOTOS\Photos\\"
     json_file_list = glob.glob(generalPath+"*.json")
     valid_months_list = ["January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September" , "October" , "November" , "December"]
     birthday_commands = ["add", "edit", "list"]
@@ -250,6 +255,55 @@ class Commands(cmd.Cmd):
     def help_journal(self):
         prYellow("\nUsage: >> journal")
         prYellow("\nFunctionality: Log today's entry\n")
+
+
+    def traverse_recursively(self,PATH):
+        list_of_items = []
+        for root, dirs, files in os.walk(os.path.abspath(PATH)):
+            for file in files:
+                list_of_items.append(os.path.join(root, file))
+        return list_of_items
+
+
+    def get_image_taken_date(self,image_path):
+        try:
+            img = Image.open(image_path)
+            exif_data = img._getexif()
+        
+            for tag, value in exif_data.items():
+                tag_name = TAGS.get(tag, tag)
+                if tag_name == "DateTimeOriginal":
+                    return value
+        except Exception as e:
+            pass
+    
+        return None
+    
+    def create_slideshow(self,image_paths, output_path, duration_per_image=3):
+        clip_list = [ImageSequenceClip([path], durations=[duration_per_image]) for path in image_paths]
+        final_clip = concatenate_videoclips(clip_list, method="compose")
+        final_clip.write_videofile(output_path, fps=24)
+
+
+    def do_movie(self,line):
+        list_of_images = self.traverse_recursively(self.photos_path)
+        movie_images_list = []
+        for i in list_of_images:
+            date_taken = (self.get_image_taken_date(i))
+            if(date_taken != None):
+                split1 = date_taken.split(" ")
+                split2 = split1[0].split(":")
+                image_taken_month = split2[1]
+                image_taken_day = split2[2]
+                if( (int(image_taken_month) == int(self.monthNum)) and (int(image_taken_day)==int(self.day)) ):
+                    movie_images_list.append(i)
+        print(len(movie_images_list))
+        if(len(movie_images_list)>0):
+            self.create_slideshow(movie_images_list,"output.mp4")
+        else:
+            print("There were no images to create a movie")
+        
+
 
     def do_history(self,line):
         print("\n")
