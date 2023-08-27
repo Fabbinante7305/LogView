@@ -184,6 +184,7 @@ class Commands(cmd.Cmd):
     def do_search(self,line):
 
         line_split = line.split(" ")
+        total_count = 0
 
 
         for i in self.json_file_list:
@@ -196,6 +197,7 @@ class Commands(cmd.Cmd):
             for value in values:
                 count = count + 1
                 if(all([p in value for p in line_split])):
+                    total_count = total_count + 1
                     file_name_split = i.split("\\")
                     file_name_split_again = file_name_split[len(file_name_split)-1].split("_")
                     print("\n" + file_name_split_again[0] + " " + keys[count] + " " + file_name_split_again[1].split(".")[0])
@@ -203,6 +205,7 @@ class Commands(cmd.Cmd):
                     print("_______________________________")
                     print(value + "\n")
 
+        prYellow("\nLogView has found " + str(total_count) + " resulting occurences\n")
 
     def do_journal(self,line):
         dictionary = {}
@@ -341,8 +344,6 @@ class Commands(cmd.Cmd):
                 else:
                     prRed("\nYou do not have a file for the month of " + desired_month + " in the year " + desired_year+"\n")
 
-
-                
 
     def help_history(self):
         prYellow("\nUsage: >> history")
